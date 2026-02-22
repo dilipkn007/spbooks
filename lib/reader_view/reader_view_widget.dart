@@ -43,6 +43,19 @@ class _ReaderViewWidgetState extends State<ReaderViewWidget> {
     return Scaffold(
       key: scaffoldKey,
       backgroundColor: FlutterFlowTheme.of(context).primaryBackground,
+      floatingActionButton: FloatingActionButton(
+        onPressed: () async {
+          _model.utilityFlag = !_model.utilityFlag;
+          safeSetState(() {});
+        },
+        backgroundColor: FlutterFlowTheme.of(context).primary,
+        elevation: 8.0,
+        child: Icon(
+          Icons.add_rounded,
+          color: FlutterFlowTheme.of(context).info,
+          size: 24.0,
+        ),
+      ),
       body: SafeArea(
         top: true,
         child: Stack(
