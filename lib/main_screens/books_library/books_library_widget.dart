@@ -445,7 +445,7 @@ class _BooksLibraryWidgetState extends State<BooksLibraryWidget> {
                             padding: EdgeInsets.zero,
                             gridDelegate:
                                 SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 2,
+                              crossAxisCount: 3,
                               crossAxisSpacing: 20.0,
                               mainAxisSpacing: 24.0,
                               childAspectRatio: 0.65,
