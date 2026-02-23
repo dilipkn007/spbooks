@@ -235,7 +235,7 @@ class _ReaderViewWidgetState extends State<ReaderViewWidget> {
                 ),
               ),
             ),
-            if (_model.utilityFlag)
+            if (!_model.utilityFlag)
               Container(
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
