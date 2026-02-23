@@ -5,6 +5,7 @@ import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 import 'reader_view_model.dart';
@@ -192,14 +193,13 @@ class _ReaderViewWidgetState extends State<ReaderViewWidget> {
                   children: [
                     FlutterFlowIconButton(
                       buttonSize: 40.0,
-                      icon: Icon(
-                        Icons.close_rounded,
+                      icon: FaIcon(
+                        FontAwesomeIcons.arrowLeft,
                         color: FlutterFlowTheme.of(context).primaryText,
                         size: 24.0,
                       ),
                       onPressed: () async {
-                        _model.utilityFlag = !_model.utilityFlag;
-                        safeSetState(() {});
+                        context.safePop();
                       },
                     ),
                     Row(
