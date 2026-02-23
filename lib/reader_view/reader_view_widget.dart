@@ -61,129 +61,126 @@ class _ReaderViewWidgetState extends State<ReaderViewWidget> {
         top: true,
         child: Stack(
           children: [
-            Container(
-              child: Padding(
-                padding:
-                    EdgeInsetsDirectional.fromSTEB(24.0, 24.0, 24.0, 100.0),
-                child: SingleChildScrollView(
-                  primary: false,
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Column(
-                        mainAxisSize: MainAxisSize.min,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'CHAPTER FOUR',
-                            style: FlutterFlowTheme.of(context)
-                                .labelSmall
-                                .override(
-                                  font: GoogleFonts.roboto(
+            Align(
+              alignment: AlignmentDirectional(0.0, 0.0),
+              child: Container(
+                child: Padding(
+                  padding:
+                      EdgeInsetsDirectional.fromSTEB(24.0, 60.0, 24.0, 100.0),
+                  child: SingleChildScrollView(
+                    primary: false,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Column(
+                          mainAxisSize: MainAxisSize.min,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'CHAPTER FOUR',
+                              style: FlutterFlowTheme.of(context)
+                                  .labelSmall
+                                  .override(
+                                    font: GoogleFonts.roboto(
+                                      fontWeight: FontWeight.w600,
+                                      fontStyle: FlutterFlowTheme.of(context)
+                                          .labelSmall
+                                          .fontStyle,
+                                    ),
+                                    color: FlutterFlowTheme.of(context)
+                                        .secondaryText,
+                                    fontSize: 11.0,
+                                    letterSpacing: 0.0,
                                     fontWeight: FontWeight.w600,
                                     fontStyle: FlutterFlowTheme.of(context)
                                         .labelSmall
                                         .fontStyle,
+                                    lineHeight: 1.45,
                                   ),
-                                  color: FlutterFlowTheme.of(context)
-                                      .secondaryText,
-                                  fontSize: 11.0,
-                                  letterSpacing: 0.0,
-                                  fontWeight: FontWeight.w600,
-                                  fontStyle: FlutterFlowTheme.of(context)
-                                      .labelSmall
-                                      .fontStyle,
-                                  lineHeight: 1.45,
-                                ),
-                          ),
-                          Text(
-                            'The Architecture of Light',
-                            style: FlutterFlowTheme.of(context)
-                                .headlineMedium
-                                .override(
-                                  font: GoogleFonts.roboto(
+                            ),
+                            Text(
+                              'The Architecture of Light',
+                              style: FlutterFlowTheme.of(context)
+                                  .headlineMedium
+                                  .override(
+                                    font: GoogleFonts.roboto(
+                                      fontWeight: FontWeight.bold,
+                                      fontStyle: FlutterFlowTheme.of(context)
+                                          .headlineMedium
+                                          .fontStyle,
+                                    ),
+                                    color: FlutterFlowTheme.of(context)
+                                        .primaryText,
+                                    fontSize: 28.0,
+                                    letterSpacing: 0.0,
                                     fontWeight: FontWeight.bold,
                                     fontStyle: FlutterFlowTheme.of(context)
                                         .headlineMedium
                                         .fontStyle,
+                                    lineHeight: 1.29,
                                   ),
-                                  color:
-                                      FlutterFlowTheme.of(context).primaryText,
-                                  fontSize: 28.0,
-                                  letterSpacing: 0.0,
-                                  fontWeight: FontWeight.bold,
+                            ),
+                          ].divide(SizedBox(height: 4.0)),
+                        ),
+                        Container(
+                          height: 16.0,
+                        ),
+                        Text(
+                          'The first thing one notices about the morning in the valley is not the sound of the birds, but the way the light interacts with the mist. It doesn\'t simply shine through; it weaves itself into the very fabric of the air.\n\nLumina had spent most of her life studying these transitions. To her, light was more than a physical phenomenon; it was a language. A language spoken in shadows, reflections, and the subtle gradients of a fading sunset. She adjusted her spectacles and leaned closer to the ancient manuscript, the parchment feeling like dried silk beneath her fingertips.\n\n\'Everything is connected,\' she whispered to the empty room. The dust motes danced in a stray beam of sun, as if agreeing with her. The library was silent, save for the rhythmic ticking of the pendulum clock in the corner—a steady heartbeat for a house filled with forgotten stories. Outside, the world was rushing toward a future she wasn\'t sure she wanted to join, but here, between these leather-bound walls, time was an ocean she could swim in forever.',
+                          textAlign: TextAlign.start,
+                          style: FlutterFlowTheme.of(context)
+                              .bodyLarge
+                              .override(
+                                font: GoogleFonts.roboto(
+                                  fontWeight: FontWeight.normal,
                                   fontStyle: FlutterFlowTheme.of(context)
-                                      .headlineMedium
+                                      .bodyLarge
                                       .fontStyle,
-                                  lineHeight: 1.29,
                                 ),
-                          ),
-                        ].divide(SizedBox(height: 4.0)),
-                      ),
-                      Container(
-                        height: 16.0,
-                      ),
-                      Text(
-                        'The first thing one notices about the morning in the valley is not the sound of the birds, but the way the light interacts with the mist. It doesn\'t simply shine through; it weaves itself into the very fabric of the air.\n\nLumina had spent most of her life studying these transitions. To her, light was more than a physical phenomenon; it was a language. A language spoken in shadows, reflections, and the subtle gradients of a fading sunset. She adjusted her spectacles and leaned closer to the ancient manuscript, the parchment feeling like dried silk beneath her fingertips.\n\n\'Everything is connected,\' she whispered to the empty room. The dust motes danced in a stray beam of sun, as if agreeing with her. The library was silent, save for the rhythmic ticking of the pendulum clock in the corner—a steady heartbeat for a house filled with forgotten stories. Outside, the world was rushing toward a future she wasn\'t sure she wanted to join, but here, between these leather-bound walls, time was an ocean she could swim in forever.',
-                        textAlign: TextAlign.start,
-                        style: FlutterFlowTheme.of(context).bodyLarge.override(
-                              font: GoogleFonts.roboto(
+                                color: FlutterFlowTheme.of(context).primaryText,
+                                fontSize: 16.0,
+                                letterSpacing: 0.0,
                                 fontWeight: FontWeight.normal,
                                 fontStyle: FlutterFlowTheme.of(context)
                                     .bodyLarge
                                     .fontStyle,
+                                lineHeight: 1.8,
                               ),
-                              color: FlutterFlowTheme.of(context).primaryText,
-                              fontSize: 16.0,
-                              letterSpacing: 0.0,
-                              fontWeight: FontWeight.normal,
-                              fontStyle: FlutterFlowTheme.of(context)
-                                  .bodyLarge
-                                  .fontStyle,
-                              lineHeight: 1.8,
-                            ),
-                      ),
-                      Text(
-                        'She turned the page, the sound a crisp snap in the stillness. The diagram on page 402 was unlike anything she had seen before. It depicted a series of lenses arranged in a geometric pattern that defied traditional optics. It wasn\'t designed to focus light—it was designed to fold it.',
-                        textAlign: TextAlign.start,
-                        style: FlutterFlowTheme.of(context).bodyLarge.override(
-                              font: GoogleFonts.roboto(
+                        ),
+                        Text(
+                          'She turned the page, the sound a crisp snap in the stillness. The diagram on page 402 was unlike anything she had seen before. It depicted a series of lenses arranged in a geometric pattern that defied traditional optics. It wasn\'t designed to focus light—it was designed to fold it.',
+                          textAlign: TextAlign.start,
+                          style: FlutterFlowTheme.of(context)
+                              .bodyLarge
+                              .override(
+                                font: GoogleFonts.roboto(
+                                  fontWeight: FontWeight.normal,
+                                  fontStyle: FlutterFlowTheme.of(context)
+                                      .bodyLarge
+                                      .fontStyle,
+                                ),
+                                color: FlutterFlowTheme.of(context).primaryText,
+                                fontSize: 16.0,
+                                letterSpacing: 0.0,
                                 fontWeight: FontWeight.normal,
                                 fontStyle: FlutterFlowTheme.of(context)
                                     .bodyLarge
                                     .fontStyle,
+                                lineHeight: 1.8,
                               ),
-                              color: FlutterFlowTheme.of(context).primaryText,
-                              fontSize: 16.0,
-                              letterSpacing: 0.0,
-                              fontWeight: FontWeight.normal,
-                              fontStyle: FlutterFlowTheme.of(context)
-                                  .bodyLarge
-                                  .fontStyle,
-                              lineHeight: 1.8,
-                            ),
-                      ),
-                    ].divide(SizedBox(height: 24.0)),
+                        ),
+                      ].divide(SizedBox(height: 24.0)),
+                    ),
                   ),
                 ),
               ),
             ),
             Container(
               height: 80.0,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    FlutterFlowTheme.of(context).primaryBackground,
-                    Color(0x001A1A20)
-                  ],
-                  stops: [0.01, 1.0],
-                  begin: AlignmentDirectional(0.0, 1.0),
-                  end: AlignmentDirectional(0, -1.0),
-                ),
-              ),
+              decoration: BoxDecoration(),
               child: Padding(
                 padding: EdgeInsetsDirectional.fromSTEB(24.0, 16.0, 24.0, 16.0),
                 child: Row(
