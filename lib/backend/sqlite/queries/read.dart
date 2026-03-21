@@ -30,3 +30,109 @@ class ReadAllBooksNamesRow extends SqliteRow {
 }
 
 /// END READ ALL BOOKS NAMES
+
+/// BEGIN FETCHCHAPTERS
+Future<List<FetchChaptersRow>> performFetchChapters(
+  Database database, {
+  int? bookId,
+  int? parentId,
+}) {
+  final query = '''
+SELECT * FROM chapters WHERE book_id = ${bookId} AND parent_id=${parentId} ORDER BY number;
+''';
+  return _readQuery(database, query, (d) => FetchChaptersRow(d));
+}
+
+class FetchChaptersRow extends SqliteRow {
+  FetchChaptersRow(Map<String, dynamic> data) : super(data);
+
+  String get title => data['title'] as String;
+  String get content => data['content'] as String;
+  int get number => data['number'] as int;
+  int get bookId => data['book_id'] as int;
+  int get id => data['id'] as int;
+  int get parentId => data['parent_id'] as int;
+}
+
+/// END FETCHCHAPTERS
+
+/// BEGIN FETCHCHAPTERSCONTENT
+Future<List<FetchChaptersContentRow>> performFetchChaptersContent(
+  Database database, {
+  int? bookId,
+  int? parentId,
+}) {
+  final query = '''
+SELECT * FROM chapters WHERE book_id = ${bookId} AND parent_id=${parentId} ORDER BY number;
+''';
+  return _readQuery(database, query, (d) => FetchChaptersContentRow(d));
+}
+
+class FetchChaptersContentRow extends SqliteRow {
+  FetchChaptersContentRow(Map<String, dynamic> data) : super(data);
+
+  String get title => data['title'] as String;
+  String get content => data['content'] as String;
+  int get number => data['number'] as int;
+  int get bookId => data['book_id'] as int;
+  int get id => data['id'] as int;
+  int get parentId => data['parent_id'] as int;
+}
+
+/// END FETCHCHAPTERSCONTENT
+
+/// BEGIN FETCHSUBCHAPTERS
+Future<List<FetchSubChaptersRow>> performFetchSubChapters(
+  Database database, {
+  int? chapterId,
+  int? bookId,
+}) {
+  final query = '''
+SELECT * FROM chapters WHERE book_id= ${bookId} AND parent_id = ${chapterId} ORDER BY number;
+''';
+  return _readQuery(database, query, (d) => FetchSubChaptersRow(d));
+}
+
+class FetchSubChaptersRow extends SqliteRow {
+  FetchSubChaptersRow(Map<String, dynamic> data) : super(data);
+
+  String get title => data['title'] as String;
+  String get content => data['content'] as String;
+  int get number => data['number'] as int;
+  int get bookId => data['book_id'] as int;
+  int get id => data['id'] as int;
+  int get parentId => data['parent_id'] as int;
+}
+
+/// END FETCHSUBCHAPTERS
+
+/// BEGIN SEARCHCONTENT
+Future<List<SearchContentRow>> performSearchContent(
+  Database database, {
+  int? bookId,
+  int? chapterId,
+  String? content,
+}) {
+  final query = '''
+SELECT * 
+FROM chapters 
+WHERE (${bookId} = -1 OR book_id = ${bookId})
+  AND (${chapterId} = -1 OR number = ${chapterId})
+  AND content LIKE '%${content}%' COLLATE NOCASE
+ORDER BY book_id, number;
+''';
+  return _readQuery(database, query, (d) => SearchContentRow(d));
+}
+
+class SearchContentRow extends SqliteRow {
+  SearchContentRow(Map<String, dynamic> data) : super(data);
+
+  int? get id => data['id'] as int?;
+  int? get bookId => data['book_id'] as int?;
+  int? get number => data['number'] as int?;
+  String? get title => data['title'] as String?;
+  String? get content => data['content'] as String?;
+  int? get parent => data['parent'] as int?;
+}
+
+/// END SEARCHCONTENT

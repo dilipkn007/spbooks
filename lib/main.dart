@@ -117,7 +117,7 @@ class _NavBarPageState extends State<NavBarPage> {
     final tabs = {
       'BooksLibrary': BooksLibraryWidget(),
       'PowerSearch': PowerSearchWidget(),
-      'Bookmarks': BookmarksWidget(),
+      'BookmarksCopy': BookmarksCopyWidget(),
     };
     final currentIndex = tabs.keys.toList().indexOf(_currentPageName);
 
@@ -138,8 +138,8 @@ class _NavBarPageState extends State<NavBarPage> {
         type: BottomNavigationBarType.fixed,
         items: <BottomNavigationBarItem>[
           BottomNavigationBarItem(
-            icon: FaIcon(
-              FontAwesomeIcons.book,
+            icon: Icon(
+              FFIcons.kaccountCircle,
             ),
             label: 'Books',
             tooltip: '',

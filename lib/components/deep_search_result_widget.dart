@@ -15,6 +15,8 @@ class DeepSearchResultWidget extends StatefulWidget {
     this.snippet_start,
     this.match_text,
     this.snippet_end,
+    this.chapterNumber,
+    this.image,
   });
 
   final String? title;
@@ -23,6 +25,8 @@ class DeepSearchResultWidget extends StatefulWidget {
   final String? snippet_start;
   final String? match_text;
   final String? snippet_end;
+  final String? chapterNumber;
+  final String? image;
 
   @override
   State<DeepSearchResultWidget> createState() => _DeepSearchResultWidgetState();
@@ -87,8 +91,7 @@ class _DeepSearchResultWidgetState extends State<DeepSearchResultWidget> {
                       child: CachedNetworkImage(
                         fadeInDuration: Duration(milliseconds: 0),
                         fadeOutDuration: Duration(milliseconds: 0),
-                        imageUrl:
-                            'https://dimg.dreamflow.cloud/v1/image/book cover The Minimalist Mindset',
+                        imageUrl: widget.image!,
                         width: double.infinity,
                         height: double.infinity,
                         fit: BoxFit.cover,
@@ -129,7 +132,7 @@ class _DeepSearchResultWidgetState extends State<DeepSearchResultWidget> {
                           overflow: TextOverflow.ellipsis,
                         ),
                         Text(
-                          'Page ${widget.page_num} • ${widget.author}',
+                          'Page ${widget.chapterNumber}',
                           style: FlutterFlowTheme.of(context)
                               .labelSmall
                               .override(

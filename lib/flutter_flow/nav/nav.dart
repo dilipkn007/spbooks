@@ -43,9 +43,18 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
           builder: (context, _) => NavBarPage(),
         ),
         FFRoute(
-          name: HomePageWidget.routeName,
-          path: HomePageWidget.routePath,
-          builder: (context, params) => HomePageWidget(),
+          name: ChapterListWidget.routeName,
+          path: ChapterListWidget.routePath,
+          builder: (context, params) => ChapterListWidget(
+            bookId: params.getParam(
+              'bookId',
+              ParamType.int,
+            ),
+            parentId: params.getParam(
+              'parentId',
+              ParamType.int,
+            ),
+          ),
         ),
         FFRoute(
             name: BooksLibraryWidget.routeName,
@@ -64,17 +73,34 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
         FFRoute(
           name: ReaderViewWidget.routeName,
           path: ReaderViewWidget.routePath,
-          builder: (context, params) => ReaderViewWidget(),
+          builder: (context, params) => ReaderViewWidget(
+            chapterNumber: params.getParam(
+              'chapterNumber',
+              ParamType.int,
+            ),
+            content: params.getParam(
+              'content',
+              ParamType.String,
+            ),
+            title: params.getParam(
+              'title',
+              ParamType.String,
+            ),
+            bookId: params.getParam(
+              'bookId',
+              ParamType.int,
+            ),
+            parentId: params.getParam(
+              'parentId',
+              ParamType.int,
+            ),
+          ),
         ),
         FFRoute(
-            name: BookmarksWidget.routeName,
-            path: BookmarksWidget.routePath,
-            builder: (context, params) => params.isEmpty
-                ? NavBarPage(initialPage: 'Bookmarks')
-                : NavBarPage(
-                    initialPage: 'Bookmarks',
-                    page: BookmarksWidget(),
-                  )),
+          name: BookmarksWidget.routeName,
+          path: BookmarksWidget.routePath,
+          builder: (context, params) => BookmarksWidget(),
+        ),
         FFRoute(
           name: SettingsWidget.routeName,
           path: SettingsWidget.routePath,
@@ -87,7 +113,39 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
                 ? NavBarPage(initialPage: 'PowerSearch')
                 : NavBarPage(
                     initialPage: 'PowerSearch',
-                    page: PowerSearchWidget(),
+                    page: PowerSearchWidget(
+                      bookId: params.getParam(
+                        'bookId',
+                        ParamType.int,
+                      ),
+                      chapter: params.getParam(
+                        'chapter',
+                        ParamType.int,
+                      ),
+                    ),
+                  )),
+        FFRoute(
+          name: SubChapterListWidget.routeName,
+          path: SubChapterListWidget.routePath,
+          builder: (context, params) => SubChapterListWidget(
+            bookId: params.getParam(
+              'bookId',
+              ParamType.int,
+            ),
+            parentId: params.getParam(
+              'parentId',
+              ParamType.int,
+            ),
+          ),
+        ),
+        FFRoute(
+            name: BookmarksCopyWidget.routeName,
+            path: BookmarksCopyWidget.routePath,
+            builder: (context, params) => params.isEmpty
+                ? NavBarPage(initialPage: 'BookmarksCopy')
+                : NavBarPage(
+                    initialPage: 'BookmarksCopy',
+                    page: BookmarksCopyWidget(),
                   ))
       ].map((r) => r.toRoute(appStateNotifier)).toList(),
     );
@@ -215,6 +273,7 @@ class FFRoute {
           return transitionInfo.hasTransition
               ? CustomTransitionPage(
                   key: state.pageKey,
+                  name: state.name,
                   child: child,
                   transitionDuration: transitionInfo.duration,
                   transitionsBuilder:
@@ -232,7 +291,8 @@ class FFRoute {
                     child,
                   ),
                 )
-              : MaterialPage(key: state.pageKey, child: child);
+              : MaterialPage(
+                  key: state.pageKey, name: state.name, child: child);
         },
         routes: routes,
       );

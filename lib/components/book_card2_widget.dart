@@ -109,97 +109,36 @@ class _BookCard2WidgetState extends State<BookCard2Widget> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      valueOrDefault<String>(
-                        widget.title,
-                        'The Silent Patient',
-                      ),
-                      maxLines: 2,
-                      style: FlutterFlowTheme.of(context).titleMedium.override(
-                            font: GoogleFonts.roboto(
-                              fontWeight: FontWeight.bold,
-                              fontStyle: FlutterFlowTheme.of(context)
-                                  .titleMedium
-                                  .fontStyle,
-                            ),
-                            color: FlutterFlowTheme.of(context).primaryText,
-                            fontSize: 16.0,
-                            letterSpacing: 0.0,
-                            fontWeight: FontWeight.bold,
-                            fontStyle: FlutterFlowTheme.of(context)
-                                .titleMedium
-                                .fontStyle,
-                            lineHeight: 1.5,
-                          ),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    Text(
-                      valueOrDefault<String>(
-                        widget.author,
-                        'Alex Michaelides',
-                      ),
-                      style: FlutterFlowTheme.of(context).bodySmall.override(
-                            font: GoogleFonts.roboto(
-                              fontWeight: FontWeight.normal,
-                              fontStyle: FlutterFlowTheme.of(context)
-                                  .bodySmall
-                                  .fontStyle,
-                            ),
-                            color: FlutterFlowTheme.of(context).secondaryText,
-                            fontSize: 12.0,
-                            letterSpacing: 0.0,
-                            fontWeight: FontWeight.normal,
-                            fontStyle: FlutterFlowTheme.of(context)
-                                .bodySmall
-                                .fontStyle,
-                            lineHeight: 1.33,
-                          ),
-                    ),
                     Row(
                       mainAxisSize: MainAxisSize.max,
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        FlutterFlowChoiceChips(
-                          options: [ChipData('Thriller')],
-                          onChanged: (val) => safeSetState(
-                              () => _model.choiceChipsValue = val?.firstOrNull),
-                          selectedChipStyle: ChipStyle(
-                            backgroundColor:
-                                FlutterFlowTheme.of(context).primaryBackground,
-                            textStyle: TextStyle(
-                              color: FlutterFlowTheme.of(context).secondaryText,
-                            ),
-                            iconColor:
-                                FlutterFlowTheme.of(context).secondaryText,
-                            iconSize: 0.0,
-                            labelPadding: EdgeInsetsDirectional.fromSTEB(
-                                0.0, 0.0, 0.0, 0.0),
-                            elevation: 0.0,
-                            borderWidth: 0.0,
-                            borderRadius: BorderRadius.circular(8.0),
+                        Text(
+                          valueOrDefault<String>(
+                            widget.title,
+                            'The Silent Patient',
                           ),
-                          unselectedChipStyle: ChipStyle(
-                            backgroundColor: Color(0x00000000),
-                            textStyle: TextStyle(
-                              color: FlutterFlowTheme.of(context).secondaryText,
-                            ),
-                            iconColor:
-                                FlutterFlowTheme.of(context).secondaryText,
-                            iconSize: 0.0,
-                            labelPadding: EdgeInsetsDirectional.fromSTEB(
-                                0.0, 0.0, 0.0, 0.0),
-                            elevation: 0.0,
-                            borderWidth: 0.0,
-                            borderRadius: BorderRadius.circular(8.0),
-                          ),
-                          chipSpacing: 0.0,
-                          multiselect: false,
-                          controller: _model.choiceChipsValueController ??=
-                              FormFieldController<List<String>>(
-                            [],
-                          ),
-                          wrapped: false,
+                          maxLines: 2,
+                          style: FlutterFlowTheme.of(context)
+                              .titleMedium
+                              .override(
+                                font: GoogleFonts.roboto(
+                                  fontWeight: FontWeight.bold,
+                                  fontStyle: FlutterFlowTheme.of(context)
+                                      .titleMedium
+                                      .fontStyle,
+                                ),
+                                color: FlutterFlowTheme.of(context).primaryText,
+                                fontSize: 16.0,
+                                letterSpacing: 0.0,
+                                fontWeight: FontWeight.bold,
+                                fontStyle: FlutterFlowTheme.of(context)
+                                    .titleMedium
+                                    .fontStyle,
+                                lineHeight: 1.5,
+                              ),
+                          overflow: TextOverflow.ellipsis,
                         ),
                         FlutterFlowIconButton(
                           buttonSize: 40.0,
@@ -213,6 +152,45 @@ class _BookCard2WidgetState extends State<BookCard2Widget> {
                           },
                         ),
                       ],
+                    ),
+                    FlutterFlowChoiceChips(
+                      options: [ChipData('Thriller')],
+                      onChanged: (val) => safeSetState(
+                          () => _model.choiceChipsValue = val?.firstOrNull),
+                      selectedChipStyle: ChipStyle(
+                        backgroundColor:
+                            FlutterFlowTheme.of(context).primaryBackground,
+                        textStyle: TextStyle(
+                          color: FlutterFlowTheme.of(context).secondaryText,
+                        ),
+                        iconColor: FlutterFlowTheme.of(context).secondaryText,
+                        iconSize: 0.0,
+                        labelPadding:
+                            EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 0.0, 0.0),
+                        elevation: 0.0,
+                        borderWidth: 0.0,
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
+                      unselectedChipStyle: ChipStyle(
+                        backgroundColor: Color(0x00000000),
+                        textStyle: TextStyle(
+                          color: FlutterFlowTheme.of(context).secondaryText,
+                        ),
+                        iconColor: FlutterFlowTheme.of(context).secondaryText,
+                        iconSize: 0.0,
+                        labelPadding:
+                            EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 0.0, 0.0),
+                        elevation: 0.0,
+                        borderWidth: 0.0,
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
+                      chipSpacing: 0.0,
+                      multiselect: false,
+                      controller: _model.choiceChipsValueController ??=
+                          FormFieldController<List<String>>(
+                        [],
+                      ),
+                      wrapped: false,
                     ),
                   ].divide(SizedBox(height: 4.0)),
                 ),

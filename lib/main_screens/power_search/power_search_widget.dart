@@ -1,16 +1,27 @@
+import '/backend/sqlite/sqlite_manager.dart';
 import '/components/deep_search_result_widget.dart';
 import '/flutter_flow/flutter_flow_drop_down.dart';
 import '/flutter_flow/flutter_flow_icon_button.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/form_field_controller.dart';
+import '/flutter_flow/random_data_util.dart' as random_data;
+import '/index.dart';
+import 'package:easy_debounce/easy_debounce.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'power_search_model.dart';
 export 'power_search_model.dart';
 
 class PowerSearchWidget extends StatefulWidget {
-  const PowerSearchWidget({super.key});
+  const PowerSearchWidget({
+    super.key,
+    int? bookId,
+    this.chapter,
+  }) : this.bookId = bookId ?? -1;
+
+  final int bookId;
+  final int? chapter;
 
   static String routeName = 'PowerSearch';
   static String routePath = '/powerSearch';
@@ -196,6 +207,39 @@ class _PowerSearchWidgetState extends State<PowerSearchWidget> {
                                 child: TextFormField(
                                   controller: _model.textController,
                                   focusNode: _model.textFieldFocusNode,
+                                  onChanged: (_) => EasyDebounce.debounce(
+                                    '_model.textController',
+                                    Duration(milliseconds: 2000),
+                                    () async {
+                                      _model.search =
+                                          _model.textController.text;
+                                      safeSetState(() {});
+                                      await SQLiteManager.instance
+                                          .searchContent(
+                                        bookId: _model.book,
+                                        content: _model.search,
+                                        chapterId: _model.chapter,
+                                      );
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        SnackBar(
+                                          content: Text(
+                                            '${_model.search}${_model.book?.toString()}${_model.chapter?.toString()}',
+                                            style: TextStyle(
+                                              color:
+                                                  FlutterFlowTheme.of(context)
+                                                      .primaryText,
+                                            ),
+                                          ),
+                                          duration:
+                                              Duration(milliseconds: 4000),
+                                          backgroundColor:
+                                              FlutterFlowTheme.of(context)
+                                                  .secondary,
+                                        ),
+                                      );
+                                    },
+                                  ),
                                   obscureText: false,
                                   decoration: InputDecoration(
                                     hintText: 'Search keywords inside books...',
@@ -235,6 +279,10 @@ class _PowerSearchWidgetState extends State<PowerSearchWidget> {
                                     onChanged: (newValue) async {
                                       safeSetState(
                                           () => _model.switchValue = newValue);
+                                      if (newValue) {
+                                        _model.deepSearchFlag = true;
+                                        safeSetState(() {});
+                                      }
                                     },
                                     activeThumbColor:
                                         FlutterFlowTheme.of(context).primary,
@@ -328,21 +376,42 @@ class _PowerSearchWidgetState extends State<PowerSearchWidget> {
                               child: Padding(
                                 padding: EdgeInsetsDirectional.fromSTEB(
                                     16.0, 8.0, 16.0, 8.0),
-                                child: FlutterFlowDropDown<String>(
+                                child: FlutterFlowDropDown<int>(
                                   controller:
                                       _model.dropDownValueController1 ??=
-                                          FormFieldController<String>(
-                                    _model.dropDownValue1 ??= 'All Books',
+                                          FormFieldController<int>(
+                                    _model.dropDownValue1 ??= -1,
                                   ),
-                                  options: [
+                                  options: List<int>.from([-1, 1, 2, 3, 4, 5]),
+                                  optionLabels: [
                                     'All Books',
-                                    'Technical',
-                                    'Philosophy',
-                                    'Fiction',
-                                    'Academic'
+                                    'Beyond Birth and Death',
+                                    'Bhagavad-gita',
+                                    'Chaitanya Charitamrita',
+                                    'Easy Journey to Other Planets',
+                                    'Elevation to Kṛṣṇa Consciousness'
                                   ],
-                                  onChanged: (val) => safeSetState(
-                                      () => _model.dropDownValue1 = val),
+                                  onChanged: (val) async {
+                                    safeSetState(
+                                        () => _model.dropDownValue1 = val);
+                                    _model.book = _model.dropDownValue1;
+                                    safeSetState(() {});
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text(
+                                          _model.book!.toString(),
+                                          style: TextStyle(
+                                            color: FlutterFlowTheme.of(context)
+                                                .primaryText,
+                                          ),
+                                        ),
+                                        duration: Duration(milliseconds: 4000),
+                                        backgroundColor:
+                                            FlutterFlowTheme.of(context)
+                                                .secondary,
+                                      ),
+                                    );
+                                  },
                                   textStyle: FlutterFlowTheme.of(context)
                                       .bodyMedium
                                       .override(
@@ -422,60 +491,113 @@ class _PowerSearchWidgetState extends State<PowerSearchWidget> {
                               child: Padding(
                                 padding: EdgeInsetsDirectional.fromSTEB(
                                     16.0, 8.0, 16.0, 8.0),
-                                child: FlutterFlowDropDown<String>(
-                                  controller:
-                                      _model.dropDownValueController2 ??=
-                                          FormFieldController<String>(
-                                    _model.dropDownValue2 ??= 'All Chapters',
+                                child: FutureBuilder<List<FetchChaptersRow>>(
+                                  future: SQLiteManager.instance.fetchChapters(
+                                    bookId: _model.book!,
+                                    parentId: 0,
                                   ),
-                                  options: [
-                                    'All Chapters',
-                                    'Last 5 years',
-                                    '20th Century',
-                                    'Classic'
-                                  ],
-                                  onChanged: (val) => safeSetState(
-                                      () => _model.dropDownValue2 = val),
-                                  textStyle: FlutterFlowTheme.of(context)
-                                      .bodyMedium
-                                      .override(
-                                        font: GoogleFonts.inter(
-                                          fontWeight:
+                                  builder: (context, snapshot) {
+                                    // Customize what your widget looks like when it's loading.
+                                    if (!snapshot.hasData) {
+                                      return Center(
+                                        child: SizedBox(
+                                          width: 50.0,
+                                          height: 50.0,
+                                          child: CircularProgressIndicator(
+                                            valueColor:
+                                                AlwaysStoppedAnimation<Color>(
                                               FlutterFlowTheme.of(context)
-                                                  .bodyMedium
-                                                  .fontWeight,
-                                          fontStyle:
-                                              FlutterFlowTheme.of(context)
-                                                  .bodyMedium
-                                                  .fontStyle,
+                                                  .primary,
+                                            ),
+                                          ),
                                         ),
-                                        letterSpacing: 0.0,
-                                        fontWeight: FlutterFlowTheme.of(context)
-                                            .bodyMedium
-                                            .fontWeight,
-                                        fontStyle: FlutterFlowTheme.of(context)
-                                            .bodyMedium
-                                            .fontStyle,
+                                      );
+                                    }
+                                    final dropDownFetchChaptersRowList =
+                                        snapshot.data!;
+
+                                    return FlutterFlowDropDown<int>(
+                                      controller:
+                                          _model.dropDownValueController2 ??=
+                                              FormFieldController<int>(
+                                        _model.dropDownValue2 ??= -1,
                                       ),
-                                  icon: Icon(
-                                    Icons.keyboard_arrow_down_rounded,
-                                    color: FlutterFlowTheme.of(context)
-                                        .secondaryText,
-                                    size: 24.0,
-                                  ),
-                                  fillColor: FlutterFlowTheme.of(context)
-                                      .secondaryBackground,
-                                  elevation: 2.0,
-                                  borderColor:
-                                      FlutterFlowTheme.of(context).alternate,
-                                  borderWidth: 1.0,
-                                  borderRadius: 16.0,
-                                  margin: EdgeInsetsDirectional.fromSTEB(
-                                      12.0, 0.0, 12.0, 0.0),
-                                  hidesUnderline: true,
-                                  isOverButton: false,
-                                  isSearchable: false,
-                                  isMultiSelect: false,
+                                      options: List<int>.from(
+                                          dropDownFetchChaptersRowList
+                                              .map((e) => e.number)
+                                              .toList()),
+                                      optionLabels: dropDownFetchChaptersRowList
+                                          .map((e) => e.title)
+                                          .toList(),
+                                      onChanged: (val) async {
+                                        safeSetState(
+                                            () => _model.dropDownValue2 = val);
+                                        _model.chapter = _model.dropDownValue2;
+                                        safeSetState(() {});
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(
+                                          SnackBar(
+                                            content: Text(
+                                              _model.chapter!.toString(),
+                                              style: TextStyle(
+                                                color:
+                                                    FlutterFlowTheme.of(context)
+                                                        .primaryText,
+                                              ),
+                                            ),
+                                            duration:
+                                                Duration(milliseconds: 4000),
+                                            backgroundColor:
+                                                FlutterFlowTheme.of(context)
+                                                    .secondary,
+                                          ),
+                                        );
+                                      },
+                                      textStyle: FlutterFlowTheme.of(context)
+                                          .bodyMedium
+                                          .override(
+                                            font: GoogleFonts.inter(
+                                              fontWeight:
+                                                  FlutterFlowTheme.of(context)
+                                                      .bodyMedium
+                                                      .fontWeight,
+                                              fontStyle:
+                                                  FlutterFlowTheme.of(context)
+                                                      .bodyMedium
+                                                      .fontStyle,
+                                            ),
+                                            letterSpacing: 0.0,
+                                            fontWeight:
+                                                FlutterFlowTheme.of(context)
+                                                    .bodyMedium
+                                                    .fontWeight,
+                                            fontStyle:
+                                                FlutterFlowTheme.of(context)
+                                                    .bodyMedium
+                                                    .fontStyle,
+                                          ),
+                                      icon: Icon(
+                                        Icons.keyboard_arrow_down_rounded,
+                                        color: FlutterFlowTheme.of(context)
+                                            .secondaryText,
+                                        size: 24.0,
+                                      ),
+                                      fillColor: FlutterFlowTheme.of(context)
+                                          .secondaryBackground,
+                                      elevation: 2.0,
+                                      borderColor: FlutterFlowTheme.of(context)
+                                          .alternate,
+                                      borderWidth: 1.0,
+                                      borderRadius: 16.0,
+                                      margin: EdgeInsetsDirectional.fromSTEB(
+                                          12.0, 0.0, 12.0, 0.0),
+                                      hidesUnderline: true,
+                                      disabled: _model.book == -1,
+                                      isOverButton: false,
+                                      isSearchable: false,
+                                      isMultiSelect: false,
+                                    );
+                                  },
                                 ),
                               ),
                             ),
@@ -539,54 +661,92 @@ class _PowerSearchWidgetState extends State<PowerSearchWidget> {
                           ),
                         ],
                       ),
-                      Column(
-                        mainAxisSize: MainAxisSize.min,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          wrapWithModel(
-                            model: _model.deepSearchResultModel1,
-                            updateCallback: () => safeSetState(() {}),
-                            child: DeepSearchResultWidget(
-                              title: 'The Minimalist Mindset',
-                              page_num: '142',
-                              author: 'Elena Thorne',
-                              snippet_start:
-                                  'The core of cognitive load theory suggests that',
-                              match_text: 'intentional friction in UI design',
-                              snippet_end:
-                                  'actually improves long-term retention',
-                            ),
-                          ),
-                          wrapWithModel(
-                            model: _model.deepSearchResultModel2,
-                            updateCallback: () => safeSetState(() {}),
-                            child: DeepSearchResultWidget(
-                              title: 'Design Systems at Scale',
-                              page_num: '89',
-                              author: 'Marcus J. Volke',
-                              snippet_start:
-                                  'When we look at the architecture of',
-                              match_text: 'atomic components and their tokens',
-                              snippet_end:
-                                  'we find a recursive pattern of growth',
-                            ),
-                          ),
-                          wrapWithModel(
-                            model: _model.deepSearchResultModel3,
-                            updateCallback: () => safeSetState(() {}),
-                            child: DeepSearchResultWidget(
-                              title: 'Quiet Spaces',
-                              page_num: '12',
-                              author: 'Sarah Drasner',
-                              snippet_start:
-                                  'The silence between the notes is where',
-                              match_text: 'the user finds clarity',
-                              snippet_end:
-                                  'amidst the digital noise of modern apps',
-                            ),
-                          ),
-                        ].divide(SizedBox(height: 0.0)),
+                      FutureBuilder<List<SearchContentRow>>(
+                        future: SQLiteManager.instance.searchContent(
+                          bookId: _model.book,
+                          chapterId: _model.chapter,
+                          content: _model.search,
+                        ),
+                        builder: (context, snapshot) {
+                          // Customize what your widget looks like when it's loading.
+                          if (!snapshot.hasData) {
+                            return Center(
+                              child: SizedBox(
+                                width: 50.0,
+                                height: 50.0,
+                                child: CircularProgressIndicator(
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                    FlutterFlowTheme.of(context).primary,
+                                  ),
+                                ),
+                              ),
+                            );
+                          }
+                          final columnSearchContentRowList = snapshot.data!;
+
+                          return Column(
+                            mainAxisSize: MainAxisSize.min,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children:
+                                List.generate(columnSearchContentRowList.length,
+                                    (columnIndex) {
+                              final columnSearchContentRow =
+                                  columnSearchContentRowList[columnIndex];
+                              return InkWell(
+                                splashColor: Colors.transparent,
+                                focusColor: Colors.transparent,
+                                hoverColor: Colors.transparent,
+                                highlightColor: Colors.transparent,
+                                onTap: () async {
+                                  context.pushNamed(
+                                    ReaderViewWidget.routeName,
+                                    queryParameters: {
+                                      'chapterNumber': serializeParam(
+                                        columnSearchContentRow.number,
+                                        ParamType.int,
+                                      ),
+                                      'content': serializeParam(
+                                        columnSearchContentRow.content,
+                                        ParamType.String,
+                                      ),
+                                      'title': serializeParam(
+                                        columnSearchContentRow.title,
+                                        ParamType.String,
+                                      ),
+                                      'bookId': serializeParam(
+                                        columnSearchContentRow.bookId,
+                                        ParamType.int,
+                                      ),
+                                      'parentId': serializeParam(
+                                        columnSearchContentRow.parent,
+                                        ParamType.int,
+                                      ),
+                                    }.withoutNulls,
+                                  );
+                                },
+                                child: DeepSearchResultWidget(
+                                  key: Key(
+                                      'Keyxen_${columnIndex}_of_${columnSearchContentRowList.length}'),
+                                  title: columnSearchContentRow.title,
+                                  page_num: '',
+                                  author: 'Elena Thorne',
+                                  snippet_start:
+                                      'The core of cognitive load theory suggests that',
+                                  match_text:
+                                      'intentional friction in UI design',
+                                  snippet_end:
+                                      'actually improves long-term retention',
+                                  chapterNumber: _model.chapter?.toString(),
+                                  image: random_data.randomImageUrl(
+                                    0,
+                                    0,
+                                  ),
+                                ),
+                              );
+                            }).divide(SizedBox(height: 0.0)),
+                          );
+                        },
                       ),
                     ].divide(SizedBox(height: 16.0)),
                   ),

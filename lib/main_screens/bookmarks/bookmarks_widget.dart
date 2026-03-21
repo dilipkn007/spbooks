@@ -315,55 +315,80 @@ class _BookmarksWidgetState extends State<BookmarksWidget> {
                       ),
                     ].divide(SizedBox(height: 16.0)),
                   ),
-                  Column(
-                    mainAxisSize: MainAxisSize.min,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Important Snippets',
-                        style: FlutterFlowTheme.of(context)
-                            .titleMedium
-                            .override(
-                              font: GoogleFonts.roboto(
-                                fontWeight: FontWeight.w600,
-                                fontStyle: FlutterFlowTheme.of(context)
-                                    .titleMedium
-                                    .fontStyle,
+                  Opacity(
+                    opacity: 0.3,
+                    child: InkWell(
+                      splashColor: Colors.transparent,
+                      focusColor: Colors.transparent,
+                      hoverColor: Colors.transparent,
+                      highlightColor: Colors.transparent,
+                      onTap: () async {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              'Feature under implementation',
+                              style: TextStyle(
+                                color: FlutterFlowTheme.of(context).primaryText,
                               ),
-                              color: FlutterFlowTheme.of(context).primaryText,
-                              fontSize: 16.0,
-                              letterSpacing: 0.0,
-                              fontWeight: FontWeight.w600,
-                              fontStyle: FlutterFlowTheme.of(context)
-                                  .titleMedium
-                                  .fontStyle,
-                              lineHeight: 1.5,
                             ),
+                            duration: Duration(milliseconds: 4000),
+                            backgroundColor:
+                                FlutterFlowTheme.of(context).secondary,
+                          ),
+                        );
+                      },
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Important Snippets',
+                            style: FlutterFlowTheme.of(context)
+                                .titleMedium
+                                .override(
+                                  font: GoogleFonts.roboto(
+                                    fontWeight: FontWeight.w600,
+                                    fontStyle: FlutterFlowTheme.of(context)
+                                        .titleMedium
+                                        .fontStyle,
+                                  ),
+                                  color:
+                                      FlutterFlowTheme.of(context).primaryText,
+                                  fontSize: 16.0,
+                                  letterSpacing: 0.0,
+                                  fontWeight: FontWeight.w600,
+                                  fontStyle: FlutterFlowTheme.of(context)
+                                      .titleMedium
+                                      .fontStyle,
+                                  lineHeight: 1.5,
+                                ),
+                          ),
+                          wrapWithModel(
+                            model: _model.pageMarkModel1,
+                            updateCallback: () => safeSetState(() {}),
+                            child: PageMarkWidget(
+                              page_num: '142',
+                              date: '2 days ago',
+                              snippet:
+                                  'Every action you take is a vote for the type of person you wish to become. No single instance will transform your beliefs, but as the votes build up, so does the evidence of your new identity.',
+                              book_title: 'Atomic Habits',
+                            ),
+                          ),
+                          wrapWithModel(
+                            model: _model.pageMarkModel2,
+                            updateCallback: () => safeSetState(() {}),
+                            child: PageMarkWidget(
+                              page_num: '89',
+                              date: 'Oct 12',
+                              snippet:
+                                  'To produce at your peak level you need to work for extended periods with full concentration on a single task free from distraction.',
+                              book_title: 'Deep Work',
+                            ),
+                          ),
+                        ].divide(SizedBox(height: 16.0)),
                       ),
-                      wrapWithModel(
-                        model: _model.pageMarkModel1,
-                        updateCallback: () => safeSetState(() {}),
-                        child: PageMarkWidget(
-                          page_num: '142',
-                          date: '2 days ago',
-                          snippet:
-                              'Every action you take is a vote for the type of person you wish to become. No single instance will transform your beliefs, but as the votes build up, so does the evidence of your new identity.',
-                          book_title: 'Atomic Habits',
-                        ),
-                      ),
-                      wrapWithModel(
-                        model: _model.pageMarkModel2,
-                        updateCallback: () => safeSetState(() {}),
-                        child: PageMarkWidget(
-                          page_num: '89',
-                          date: 'Oct 12',
-                          snippet:
-                              'To produce at your peak level you need to work for extended periods with full concentration on a single task free from distraction.',
-                          book_title: 'Deep Work',
-                        ),
-                      ),
-                    ].divide(SizedBox(height: 16.0)),
+                    ),
                   ),
                   Container(
                     height: 24.0,

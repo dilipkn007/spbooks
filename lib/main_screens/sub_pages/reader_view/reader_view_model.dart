@@ -1,4 +1,5 @@
 import '/components/control_chip_widget.dart';
+import '/components/cust_app_bar_widget.dart';
 import '/components/font_size_button_widget.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import 'reader_view_widget.dart' show ReaderViewWidget;
@@ -9,8 +10,20 @@ class ReaderViewModel extends FlutterFlowModel<ReaderViewWidget> {
 
   bool utilityFlag = true;
 
+  double scrollProgress = 0.0;
+
   ///  State fields for stateful widgets in this page.
 
+  // State field(s) for PageView widget.
+  PageController? pageViewController;
+
+  int get pageViewCurrentIndex => pageViewController != null &&
+          pageViewController!.hasClients &&
+          pageViewController!.page != null
+      ? pageViewController!.page!.round()
+      : 0;
+  // Model for custAppBar component.
+  late CustAppBarModel custAppBarModel;
   // Model for control_chip component.
   late ControlChipModel controlChipModel1;
   // Model for control_chip component.
@@ -26,6 +39,7 @@ class ReaderViewModel extends FlutterFlowModel<ReaderViewWidget> {
 
   @override
   void initState(BuildContext context) {
+    custAppBarModel = createModel(context, () => CustAppBarModel());
     controlChipModel1 = createModel(context, () => ControlChipModel());
     controlChipModel2 = createModel(context, () => ControlChipModel());
     controlChipModel3 = createModel(context, () => ControlChipModel());
@@ -36,6 +50,7 @@ class ReaderViewModel extends FlutterFlowModel<ReaderViewWidget> {
 
   @override
   void dispose() {
+    custAppBarModel.dispose();
     controlChipModel1.dispose();
     controlChipModel2.dispose();
     controlChipModel3.dispose();

@@ -3,9 +3,9 @@ import '/components/book_card_widget.dart';
 import '/components/bookmark_item_widget.dart';
 import '/components/category_chip_widget.dart';
 import '/components/section_header_widget.dart';
-import '/flutter_flow/flutter_flow_icon_button.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
+import '/index.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -49,22 +49,9 @@ class _BooksLibraryWidgetState extends State<BooksLibraryWidget> {
       appBar: AppBar(
         backgroundColor: Color(0xFFEE8B60),
         automaticallyImplyLeading: false,
-        leading: FlutterFlowIconButton(
-          borderColor: Colors.transparent,
-          borderRadius: 30.0,
-          borderWidth: 1.0,
-          buttonSize: 60.0,
-          icon: Icon(
-            Icons.arrow_back_rounded,
-            color: Colors.white,
-            size: 30.0,
-          ),
-          onPressed: () async {
-            context.pop();
-          },
-        ),
         title: Text(
           'Srila Prabhupada Books',
+          textAlign: TextAlign.start,
           style: FlutterFlowTheme.of(context).headlineMedium.override(
                 font: GoogleFonts.interTight(
                   fontWeight:
@@ -90,18 +77,7 @@ class _BooksLibraryWidgetState extends State<BooksLibraryWidget> {
               hoverColor: Colors.transparent,
               highlightColor: Colors.transparent,
               onTap: () async {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(
-                      'Feature under development',
-                      style: TextStyle(
-                        color: FlutterFlowTheme.of(context).primaryText,
-                      ),
-                    ),
-                    duration: Duration(milliseconds: 4000),
-                    backgroundColor: FlutterFlowTheme.of(context).secondary,
-                  ),
-                );
+                context.pushNamed(SettingsWidget.routeName);
               },
               child: Icon(
                 Icons.settings_sharp,
@@ -405,7 +381,7 @@ class _BooksLibraryWidgetState extends State<BooksLibraryWidget> {
                           ),
                         ),
                       ),
-                    ].divide(SizedBox(height: 24.0)),
+                    ].divide(SizedBox(height: 4.0)),
                   ),
                   Column(
                     mainAxisSize: MainAxisSize.min,
@@ -445,10 +421,10 @@ class _BooksLibraryWidgetState extends State<BooksLibraryWidget> {
                             padding: EdgeInsets.zero,
                             gridDelegate:
                                 SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 2,
-                              crossAxisSpacing: 20.0,
-                              mainAxisSpacing: 24.0,
-                              childAspectRatio: 0.65,
+                              crossAxisCount: 3,
+                              crossAxisSpacing: 1.0,
+                              mainAxisSpacing: 1.0,
+                              childAspectRatio: 0.77,
                             ),
                             shrinkWrap: true,
                             itemCount: gridViewReadAllBooksNamesRowList.length,
@@ -456,29 +432,55 @@ class _BooksLibraryWidgetState extends State<BooksLibraryWidget> {
                               final gridViewReadAllBooksNamesRow =
                                   gridViewReadAllBooksNamesRowList[
                                       gridViewIndex];
-                              return wrapWithModel(
-                                model: _model.bookCardModels1.getModel(
-                                  gridViewReadAllBooksNamesRow.id!.toString(),
-                                  gridViewIndex,
-                                ),
-                                updateCallback: () => safeSetState(() {}),
-                                child: BookCardWidget(
-                                  key: Key(
-                                    'Key2w3_${gridViewReadAllBooksNamesRow.id!.toString()}',
+                              return Align(
+                                alignment: AlignmentDirectional(0.0, 0.0),
+                                child: InkWell(
+                                  splashColor: Colors.transparent,
+                                  focusColor: Colors.transparent,
+                                  hoverColor: Colors.transparent,
+                                  highlightColor: Colors.transparent,
+                                  onTap: () async {
+                                    context.pushNamed(
+                                      ChapterListWidget.routeName,
+                                      queryParameters: {
+                                        'bookId': serializeParam(
+                                          gridViewReadAllBooksNamesRow.id,
+                                          ParamType.int,
+                                        ),
+                                        'parentId': serializeParam(
+                                          0,
+                                          ParamType.int,
+                                        ),
+                                      }.withoutNulls,
+                                    );
+                                  },
+                                  child: wrapWithModel(
+                                    model: _model.bookCardModels.getModel(
+                                      gridViewReadAllBooksNamesRow.id!
+                                          .toString(),
+                                      gridViewIndex,
+                                    ),
+                                    updateCallback: () => safeSetState(() {}),
+                                    child: BookCardWidget(
+                                      key: Key(
+                                        'Key2w3_${gridViewReadAllBooksNamesRow.id!.toString()}',
+                                      ),
+                                      title: valueOrDefault<String>(
+                                        gridViewReadAllBooksNamesRow.title,
+                                        'null',
+                                      ),
+                                      coverImage:
+                                          gridViewReadAllBooksNamesRow.cover!,
+                                      bookId: gridViewReadAllBooksNamesRow.id!,
+                                    ),
                                   ),
-                                  title: valueOrDefault<String>(
-                                    gridViewReadAllBooksNamesRow.title,
-                                    'null',
-                                  ),
-                                  coverImage:
-                                      gridViewReadAllBooksNamesRow.cover!,
                                 ),
                               );
                             },
                           );
                         },
                       ),
-                    ].divide(SizedBox(height: 24.0)),
+                    ].divide(SizedBox(height: 4.0)),
                   ),
                   Column(
                     mainAxisSize: MainAxisSize.min,
@@ -530,7 +532,7 @@ class _BooksLibraryWidgetState extends State<BooksLibraryWidget> {
                       ),
                     ].divide(SizedBox(height: 24.0)),
                   ),
-                ].divide(SizedBox(height: 32.0)),
+                ].divide(SizedBox(height: 12.0)),
               ),
             ),
           ),

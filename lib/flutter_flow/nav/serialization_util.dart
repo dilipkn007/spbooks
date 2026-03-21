@@ -208,6 +208,14 @@ dynamic deserializeParam<T>(
         switch (T) {
           case ReadAllBooksNamesRow:
             return ReadAllBooksNamesRow(data);
+          case FetchChaptersRow:
+            return FetchChaptersRow(data);
+          case FetchChaptersContentRow:
+            return FetchChaptersContentRow(data);
+          case FetchSubChaptersRow:
+            return FetchSubChaptersRow(data);
+          case SearchContentRow:
+            return SearchContentRow(data);
           default:
             return null;
         }
