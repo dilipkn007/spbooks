@@ -51,152 +51,148 @@ class _BookCard2WidgetState extends State<BookCard2Widget> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 0.0, 16.0),
-      child: Container(
-        decoration: BoxDecoration(
-          color: FlutterFlowTheme.of(context).secondaryBackground,
-          borderRadius: BorderRadius.circular(24.0),
-          border: Border.all(
-            color: FlutterFlowTheme.of(context).alternate,
-            width: 1.0,
-          ),
+    return Container(
+      decoration: BoxDecoration(
+        color: FlutterFlowTheme.of(context).secondaryBackground,
+        borderRadius: BorderRadius.circular(24.0),
+        border: Border.all(
+          color: FlutterFlowTheme.of(context).alternate,
         ),
-        child: Padding(
-          padding: EdgeInsets.all(16.0),
-          child: Row(
-            mainAxisSize: MainAxisSize.max,
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(16.0),
-                child: Container(
-                  width: 80.0,
-                  height: 120.0,
-                  decoration: BoxDecoration(
-                    boxShadow: [
-                      BoxShadow(
-                        blurRadius: 2.0,
-                        color: Color(0x1A000000),
-                        offset: Offset(
-                          0.0,
-                          1.0,
-                        ),
-                        spreadRadius: 0.0,
-                      )
-                    ],
-                    borderRadius: BorderRadius.circular(16.0),
-                  ),
-                  child: CachedNetworkImage(
-                    fadeInDuration: Duration(milliseconds: 0),
-                    fadeOutDuration: Duration(milliseconds: 0),
-                    imageUrl:
-                        'https://dimg.dreamflow.cloud/v1/image/${valueOrDefault<String>(
-                      widget.img,
-                      'book cover psychological thriller',
-                    )}',
-                    width: double.infinity,
-                    height: double.infinity,
-                    fit: BoxFit.cover,
-                  ),
+      ),
+      child: Padding(
+        padding: EdgeInsets.all(16.0),
+        child: Row(
+          mainAxisSize: MainAxisSize.max,
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(16.0),
+              child: Container(
+                width: 80.0,
+                height: 120.0,
+                decoration: BoxDecoration(
+                  boxShadow: [
+                    BoxShadow(
+                      blurRadius: 2.0,
+                      color: Color(0x1A000000),
+                      offset: Offset(
+                        0.0,
+                        1.0,
+                      ),
+                      spreadRadius: 0.0,
+                    )
+                  ],
+                  borderRadius: BorderRadius.circular(16.0),
+                ),
+                child: CachedNetworkImage(
+                  fadeInDuration: Duration(milliseconds: 0),
+                  fadeOutDuration: Duration(milliseconds: 0),
+                  imageUrl:
+                      'https://dimg.dreamflow.cloud/v1/image/${valueOrDefault<String>(
+                    widget.img,
+                    'book cover psychological thriller',
+                  )}',
+                  width: double.infinity,
+                  height: double.infinity,
+                  fit: BoxFit.cover,
                 ),
               ),
-              Expanded(
-                flex: 1,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisSize: MainAxisSize.max,
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Text(
-                          valueOrDefault<String>(
-                            widget.title,
-                            'The Silent Patient',
-                          ),
-                          maxLines: 2,
-                          style: FlutterFlowTheme.of(context)
-                              .titleMedium
-                              .override(
-                                font: GoogleFonts.roboto(
-                                  fontWeight: FontWeight.bold,
-                                  fontStyle: FlutterFlowTheme.of(context)
-                                      .titleMedium
-                                      .fontStyle,
-                                ),
-                                color: FlutterFlowTheme.of(context).primaryText,
-                                fontSize: 16.0,
-                                letterSpacing: 0.0,
+            ),
+            Expanded(
+              flex: 1,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisSize: MainAxisSize.max,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text(
+                        valueOrDefault<String>(
+                          widget.title,
+                          'The Silent Patient',
+                        ),
+                        maxLines: 2,
+                        style: FlutterFlowTheme.of(context)
+                            .titleMedium
+                            .override(
+                              font: GoogleFonts.roboto(
                                 fontWeight: FontWeight.bold,
                                 fontStyle: FlutterFlowTheme.of(context)
                                     .titleMedium
                                     .fontStyle,
-                                lineHeight: 1.5,
                               ),
-                          overflow: TextOverflow.ellipsis,
+                              color: FlutterFlowTheme.of(context).primaryText,
+                              fontSize: 16.0,
+                              letterSpacing: 0.0,
+                              fontWeight: FontWeight.bold,
+                              fontStyle: FlutterFlowTheme.of(context)
+                                  .titleMedium
+                                  .fontStyle,
+                              lineHeight: 1.5,
+                            ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      FlutterFlowIconButton(
+                        buttonSize: 40.0,
+                        icon: Icon(
+                          Icons.bookmark_remove_rounded,
+                          color: Color(0xFFC4836A),
+                          size: 20.0,
                         ),
-                        FlutterFlowIconButton(
-                          buttonSize: 40.0,
-                          icon: Icon(
-                            Icons.bookmark_remove_rounded,
-                            color: Color(0xFFC4836A),
-                            size: 20.0,
-                          ),
-                          onPressed: () {
-                            print('IconButton pressed ...');
-                          },
-                        ),
-                      ],
+                        onPressed: () {
+                          print('IconButton pressed ...');
+                        },
+                      ),
+                    ],
+                  ),
+                  FlutterFlowChoiceChips(
+                    options: [ChipData('Thriller')],
+                    onChanged: (val) => safeSetState(
+                        () => _model.choiceChipsValue = val?.firstOrNull),
+                    selectedChipStyle: ChipStyle(
+                      backgroundColor:
+                          FlutterFlowTheme.of(context).primaryBackground,
+                      textStyle: TextStyle(
+                        color: FlutterFlowTheme.of(context).secondaryText,
+                      ),
+                      iconColor: FlutterFlowTheme.of(context).secondaryText,
+                      iconSize: 0.0,
+                      labelPadding:
+                          EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 0.0, 0.0),
+                      elevation: 0.0,
+                      borderWidth: 0.0,
+                      borderRadius: BorderRadius.circular(8.0),
                     ),
-                    FlutterFlowChoiceChips(
-                      options: [ChipData('Thriller')],
-                      onChanged: (val) => safeSetState(
-                          () => _model.choiceChipsValue = val?.firstOrNull),
-                      selectedChipStyle: ChipStyle(
-                        backgroundColor:
-                            FlutterFlowTheme.of(context).primaryBackground,
-                        textStyle: TextStyle(
-                          color: FlutterFlowTheme.of(context).secondaryText,
-                        ),
-                        iconColor: FlutterFlowTheme.of(context).secondaryText,
-                        iconSize: 0.0,
-                        labelPadding:
-                            EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 0.0, 0.0),
-                        elevation: 0.0,
-                        borderWidth: 0.0,
-                        borderRadius: BorderRadius.circular(8.0),
+                    unselectedChipStyle: ChipStyle(
+                      backgroundColor: Color(0x00000000),
+                      textStyle: TextStyle(
+                        color: FlutterFlowTheme.of(context).secondaryText,
                       ),
-                      unselectedChipStyle: ChipStyle(
-                        backgroundColor: Color(0x00000000),
-                        textStyle: TextStyle(
-                          color: FlutterFlowTheme.of(context).secondaryText,
-                        ),
-                        iconColor: FlutterFlowTheme.of(context).secondaryText,
-                        iconSize: 0.0,
-                        labelPadding:
-                            EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 0.0, 0.0),
-                        elevation: 0.0,
-                        borderWidth: 0.0,
-                        borderRadius: BorderRadius.circular(8.0),
-                      ),
-                      chipSpacing: 0.0,
-                      multiselect: false,
-                      controller: _model.choiceChipsValueController ??=
-                          FormFieldController<List<String>>(
-                        [],
-                      ),
-                      wrapped: false,
+                      iconColor: FlutterFlowTheme.of(context).secondaryText,
+                      iconSize: 0.0,
+                      labelPadding:
+                          EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 0.0, 0.0),
+                      elevation: 0.0,
+                      borderWidth: 0.0,
+                      borderRadius: BorderRadius.circular(8.0),
                     ),
-                  ].divide(SizedBox(height: 4.0)),
-                ),
+                    chipSpacing: 0.0,
+                    multiselect: false,
+                    controller: _model.choiceChipsValueController ??=
+                        FormFieldController<List<String>>(
+                      [],
+                    ),
+                    wrapped: false,
+                  ),
+                ].divide(SizedBox(height: 4.0)),
               ),
-            ].divide(SizedBox(width: 16.0)),
-          ),
+            ),
+          ].divide(SizedBox(width: 16.0)),
         ),
       ),
     );

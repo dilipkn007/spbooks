@@ -202,7 +202,7 @@ class _BookmarksCopyWidgetState extends State<BookmarksCopyWidget>
                       borderRadius: BorderRadius.circular(24.0),
                     ),
                     child: Container(
-                      height: 200.0,
+                      height: 584.51,
                       child: Column(
                         children: [
                           Align(
@@ -251,7 +251,7 @@ class _BookmarksCopyWidgetState extends State<BookmarksCopyWidget>
                                         .fontStyle,
                                   ),
                               indicatorColor:
-                                  FlutterFlowTheme.of(context).primary,
+                                  FlutterFlowTheme.of(context).tertiary,
                               tabs: [
                                 Tab(
                                   text: 'Books',
@@ -270,21 +270,87 @@ class _BookmarksCopyWidgetState extends State<BookmarksCopyWidget>
                             child: TabBarView(
                               controller: _model.tabBarController,
                               children: [
-                                Column(
-                                  mainAxisSize: MainAxisSize.max,
-                                  children: [
-                                    wrapWithModel(
-                                      model: _model.bookCard2Model,
-                                      updateCallback: () => safeSetState(() {}),
-                                      child: BookCard2Widget(
-                                        img:
-                                            'book cover psychological thriller',
-                                        title: 'The Silent Patient',
-                                        author: 'Alex Michaelides',
-                                        category: 'Thriller',
+                                SingleChildScrollView(
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.max,
+                                    children: [
+                                      wrapWithModel(
+                                        model: _model.bookCard2Model1,
+                                        updateCallback: () =>
+                                            safeSetState(() {}),
+                                        child: BookCard2Widget(
+                                          img:
+                                              'book cover psychological thriller',
+                                          title: 'The Silent Patient',
+                                          author: 'Alex Michaelides',
+                                          category: 'Thriller',
+                                        ),
                                       ),
-                                    ),
-                                  ],
+                                      wrapWithModel(
+                                        model: _model.bookCard2Model2,
+                                        updateCallback: () =>
+                                            safeSetState(() {}),
+                                        child: BookCard2Widget(
+                                          img:
+                                              'book cover psychological thriller',
+                                          title: 'The Silent Patient',
+                                          author: 'Alex Michaelides',
+                                          category: 'Thriller',
+                                        ),
+                                      ),
+                                      wrapWithModel(
+                                        model: _model.bookCard2Model3,
+                                        updateCallback: () =>
+                                            safeSetState(() {}),
+                                        child: BookCard2Widget(
+                                          img:
+                                              'book cover psychological thriller',
+                                          title: 'The Silent Patient',
+                                          author: 'Alex Michaelides',
+                                          category: 'Thriller',
+                                        ),
+                                      ),
+                                      wrapWithModel(
+                                        model: _model.bookCard2Model4,
+                                        updateCallback: () =>
+                                            safeSetState(() {}),
+                                        child: BookCard2Widget(
+                                          img:
+                                              'book cover psychological thriller',
+                                          title: 'The Silent Patient',
+                                          author: 'Alex Michaelides',
+                                          category: 'Thriller',
+                                        ),
+                                      ),
+                                      wrapWithModel(
+                                        model: _model.bookCard2Model5,
+                                        updateCallback: () =>
+                                            safeSetState(() {}),
+                                        child: BookCard2Widget(
+                                          img:
+                                              'book cover psychological thriller',
+                                          title: 'The Silent Patient',
+                                          author: 'Alex Michaelides',
+                                          category: 'Thriller',
+                                        ),
+                                      ),
+                                      wrapWithModel(
+                                        model: _model.bookCard2Model6,
+                                        updateCallback: () =>
+                                            safeSetState(() {}),
+                                        child: BookCard2Widget(
+                                          img:
+                                              'book cover psychological thriller',
+                                          title: 'The Silent Patient',
+                                          author: 'Alex Michaelides',
+                                          category: 'Thriller',
+                                        ),
+                                      ),
+                                    ]
+                                        .divide(SizedBox(height: 4.0))
+                                        .addToStart(SizedBox(height: 4.0))
+                                        .addToEnd(SizedBox(height: 100.0)),
+                                  ),
                                 ),
                                 Column(
                                   mainAxisSize: MainAxisSize.max,
