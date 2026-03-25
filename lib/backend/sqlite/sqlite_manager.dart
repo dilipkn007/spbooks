@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 
 import '/backend/sqlite/init.dart';
 import 'queries/read.dart';
+import 'queries/update.dart';
 
 import 'package:sqflite/sqflite.dart';
 export 'queries/read.dart';
@@ -77,7 +78,41 @@ class SQLiteManager {
 
   /// END READ QUERY CALLS
 
+  Future<List<FetchBookmarkedBooksRow>> fetchBookmarkedBooks() =>
+      performFetchBookmarkedBooks(
+        _database,
+      );
+
+  Future<List<FetchBookmarkedPagesRow>> fetchBookmarkedPages() =>
+      performFetchBookmarkedPages(
+        _database,
+      );
+
   /// START UPDATE QUERY CALLS
+
+  Future addBookmark({
+    required int bookId,
+    int? chapterId,
+    required String type,
+  }) =>
+      performAddBookmark(
+        _database,
+        bookId: bookId,
+        chapterId: chapterId,
+        type: type,
+      );
+
+  Future removeBookmark({
+    required int bookId,
+    int? chapterId,
+    required String type,
+  }) =>
+      performRemoveBookmark(
+        _database,
+        bookId: bookId,
+        chapterId: chapterId,
+        type: type,
+      );
 
   /// END UPDATE QUERY CALLS
 }

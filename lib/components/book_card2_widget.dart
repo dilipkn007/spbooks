@@ -1,8 +1,7 @@
-import '/flutter_flow/flutter_flow_choice_chips.dart';
 import '/flutter_flow/flutter_flow_icon_button.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
-import '/flutter_flow/form_field_controller.dart';
+import '/backend/sqlite/sqlite_manager.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -16,12 +15,14 @@ class BookCard2Widget extends StatefulWidget {
     this.title,
     this.author,
     this.category,
+    this.bookId,
   });
 
   final String? img;
   final String? title;
   final String? author;
   final String? category;
+  final int? bookId;
 
   @override
   State<BookCard2Widget> createState() => _BookCard2WidgetState();
@@ -29,6 +30,7 @@ class BookCard2Widget extends StatefulWidget {
 
 class _BookCard2WidgetState extends State<BookCard2Widget> {
   late BookCard2Model _model;
+  bool isBookmarked = false;
 
   @override
   void setState(VoidCallback callback) {
@@ -40,6 +42,28 @@ class _BookCard2WidgetState extends State<BookCard2Widget> {
   void initState() {
     super.initState();
     _model = createModel(context, () => BookCard2Model());
+    _checkBookmarkStatus();
+  }
+
+  Future<void> _checkBookmarkStatus() async {
+    final books = await SQLiteManager.instance.fetchBookmarkedBooks();
+    if (books.any((b) => b.id == widget.bookId)) {
+      safeSetState(() {
+        isBookmarked = true;
+      });
+    }
+  }
+
+  void _toggleBookmark() async {
+    if (widget.bookId == null) return;
+    
+    if (isBookmarked) {
+      await SQLiteManager.instance.removeBookmark(bookId: widget.bookId!, type: "book");
+      safeSetState(() { isBookmarked = false; });
+    } else {
+      await SQLiteManager.instance.addBookmark(bookId: widget.bookId!, type: "book");
+      safeSetState(() { isBookmarked = true; });
+    }
   }
 
   @override
@@ -88,14 +112,13 @@ class _BookCard2WidgetState extends State<BookCard2Widget> {
                 child: CachedNetworkImage(
                   fadeInDuration: Duration(milliseconds: 0),
                   fadeOutDuration: Duration(milliseconds: 0),
-                  imageUrl:
-                      'https://dimg.dreamflow.cloud/v1/image/${valueOrDefault<String>(
-                    widget.img,
-                    'book cover psychological thriller',
-                  )}',
+                  imageUrl: valueOrDefault<String>(
+                    widget.img?.trim(),
+                    'https://dimg.dreamflow.cloud/v1/image/book cover psychological thriller',
+                  ),
                   width: double.infinity,
                   height: double.infinity,
-                  fit: BoxFit.cover,
+                  fit: BoxFit.fill,
                 ),
               ),
             ),
@@ -140,55 +163,15 @@ class _BookCard2WidgetState extends State<BookCard2Widget> {
                       FlutterFlowIconButton(
                         buttonSize: 40.0,
                         icon: Icon(
-                          Icons.bookmark_remove_rounded,
+                          isBookmarked ? Icons.bookmark_rounded : Icons.bookmark_border_rounded,
                           color: Color(0xFFC4836A),
                           size: 20.0,
                         ),
-                        onPressed: () {
-                          print('IconButton pressed ...');
-                        },
+                        onPressed: _toggleBookmark,
                       ),
                     ],
                   ),
-                  FlutterFlowChoiceChips(
-                    options: [ChipData('Thriller')],
-                    onChanged: (val) => safeSetState(
-                        () => _model.choiceChipsValue = val?.firstOrNull),
-                    selectedChipStyle: ChipStyle(
-                      backgroundColor:
-                          FlutterFlowTheme.of(context).primaryBackground,
-                      textStyle: TextStyle(
-                        color: FlutterFlowTheme.of(context).secondaryText,
-                      ),
-                      iconColor: FlutterFlowTheme.of(context).secondaryText,
-                      iconSize: 0.0,
-                      labelPadding:
-                          EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 0.0, 0.0),
-                      elevation: 0.0,
-                      borderWidth: 0.0,
-                      borderRadius: BorderRadius.circular(8.0),
-                    ),
-                    unselectedChipStyle: ChipStyle(
-                      backgroundColor: Color(0x00000000),
-                      textStyle: TextStyle(
-                        color: FlutterFlowTheme.of(context).secondaryText,
-                      ),
-                      iconColor: FlutterFlowTheme.of(context).secondaryText,
-                      iconSize: 0.0,
-                      labelPadding:
-                          EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 0.0, 0.0),
-                      elevation: 0.0,
-                      borderWidth: 0.0,
-                      borderRadius: BorderRadius.circular(8.0),
-                    ),
-                    chipSpacing: 0.0,
-                    multiselect: false,
-                    controller: _model.choiceChipsValueController ??=
-                        FormFieldController<List<String>>(
-                      [],
-                    ),
-                    wrapped: false,
-                  ),
+// Removed FlutterFlowChoiceChips
                 ].divide(SizedBox(height: 4.0)),
               ),
             ),

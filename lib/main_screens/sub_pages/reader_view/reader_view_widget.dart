@@ -41,6 +41,8 @@ class ReaderViewWidget extends StatefulWidget {
 class _ReaderViewWidgetState extends State<ReaderViewWidget>
     with TickerProviderStateMixin {
   late ReaderViewModel _model;
+  List<FetchChaptersContentRow>? chapters;
+  Set<int> bookmarkedChapterIds = {};
 
   final scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -50,6 +52,7 @@ class _ReaderViewWidgetState extends State<ReaderViewWidget>
   void initState() {
     super.initState();
     _model = createModel(context, () => ReaderViewModel());
+    _loadData();
 
     animationsMap.addAll({
       'textOnPageLoadAnimation': AnimationInfo(
@@ -80,6 +83,34 @@ class _ReaderViewWidgetState extends State<ReaderViewWidget>
     );
   }
 
+  Future<void> _loadData() async {
+    final fetchedChapters = await SQLiteManager.instance.fetchChaptersContent(
+      bookId: widget.bookId!,
+      parentId: widget.parentId,
+    );
+    final pages = await SQLiteManager.instance.fetchBookmarkedPages();
+    if (mounted) {
+      safeSetState(() {
+        chapters = fetchedChapters;
+        bookmarkedChapterIds = pages.map((p) => p.id).toSet();
+      });
+    }
+  }
+
+  Future<void> toggleBookmark(int chapterId) async {
+    if (bookmarkedChapterIds.contains(chapterId)) {
+      await SQLiteManager.instance.removeBookmark(bookId: widget.bookId!, chapterId: chapterId, type: "pagemark");
+      safeSetState(() {
+        bookmarkedChapterIds.remove(chapterId);
+      });
+    } else {
+      await SQLiteManager.instance.addBookmark(bookId: widget.bookId!, chapterId: chapterId, type: "pagemark");
+      safeSetState(() {
+        bookmarkedChapterIds.add(chapterId);
+      });
+    }
+  }
+
   @override
   void dispose() {
     _model.dispose();
@@ -89,6 +120,26 @@ class _ReaderViewWidgetState extends State<ReaderViewWidget>
 
   @override
   Widget build(BuildContext context) {
+    if (chapters == null) {
+      return Scaffold(
+        backgroundColor: FlutterFlowTheme.of(context).primaryBackground,
+        body: Center(
+          child: CircularProgressIndicator(
+            valueColor: AlwaysStoppedAnimation<Color>(
+              FlutterFlowTheme.of(context).primary,
+            ),
+          ),
+        ),
+      );
+    }
+    
+    final pageViewFetchChaptersContentRowList = chapters!;
+    final int currentIndex = _model.pageViewController?.page?.round() ?? max(
+      0, min(valueOrDefault<int>((widget.chapterNumber!) - 1, 0), pageViewFetchChaptersContentRowList.length - 1)
+    );
+    final currentChapterId = pageViewFetchChaptersContentRowList[currentIndex].id;
+    final bool isBookmarked = bookmarkedChapterIds.contains(currentChapterId);
+
     return Scaffold(
       key: scaffoldKey,
       backgroundColor: FlutterFlowTheme.of(context).primaryBackground,
@@ -122,32 +173,7 @@ class _ReaderViewWidgetState extends State<ReaderViewWidget>
                         mainAxisSize: MainAxisSize.max,
                         children: [
                           Expanded(
-                            child: FutureBuilder<List<FetchChaptersContentRow>>(
-                              future:
-                                  SQLiteManager.instance.fetchChaptersContent(
-                                bookId: widget.bookId!,
-                                parentId: widget.parentId,
-                              ),
-                              builder: (context, snapshot) {
-                                // Customize what your widget looks like when it's loading.
-                                if (!snapshot.hasData) {
-                                  return Center(
-                                    child: SizedBox(
-                                      width: 50.0,
-                                      height: 50.0,
-                                      child: CircularProgressIndicator(
-                                        valueColor:
-                                            AlwaysStoppedAnimation<Color>(
-                                          FlutterFlowTheme.of(context).primary,
-                                        ),
-                                      ),
-                                    ),
-                                  );
-                                }
-                                final pageViewFetchChaptersContentRowList =
-                                    snapshot.data!;
-
-                                return Container(
+                                child: Container(
                                   width: double.infinity,
                                   height: 500.0,
                                   child: Stack(
@@ -358,9 +384,7 @@ class _ReaderViewWidgetState extends State<ReaderViewWidget>
                                       ),
                                     ],
                                   ),
-                                );
-                              },
-                            ),
+                                ),
                           ),
                         ],
                       ),
@@ -371,7 +395,10 @@ class _ReaderViewWidgetState extends State<ReaderViewWidget>
                       child: wrapWithModel(
                         model: _model.custAppBarModel,
                         updateCallback: () => safeSetState(() {}),
-                        child: CustAppBarWidget(),
+                        child: CustAppBarWidget(
+                          isBookmarked: isBookmarked,
+                          onBookmarkTap: () => toggleBookmark(currentChapterId),
+                        ),
                       ),
                     ),
                     Container(
@@ -398,7 +425,7 @@ class _ReaderViewWidgetState extends State<ReaderViewWidget>
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
                                     Text(
-                                      '12% read',
+                                      '${(((currentIndex + 1) / pageViewFetchChaptersContentRowList.length) * 100).toInt()}% read',
                                       style: FlutterFlowTheme.of(context)
                                           .labelSmall
                                           .override(
@@ -414,15 +441,11 @@ class _ReaderViewWidgetState extends State<ReaderViewWidget>
                                             fontSize: 11.0,
                                             letterSpacing: 0.0,
                                             fontWeight: FontWeight.w500,
-                                            fontStyle:
-                                                FlutterFlowTheme.of(context)
-                                                    .labelSmall
-                                                    .fontStyle,
                                             lineHeight: 1.45,
                                           ),
                                     ),
                                     Text(
-                                      '42 of 340',
+                                      '${currentIndex + 1} of ${pageViewFetchChaptersContentRowList.length}',
                                       style: FlutterFlowTheme.of(context)
                                           .labelSmall
                                           .override(
@@ -438,17 +461,13 @@ class _ReaderViewWidgetState extends State<ReaderViewWidget>
                                             fontSize: 11.0,
                                             letterSpacing: 0.0,
                                             fontWeight: FontWeight.w500,
-                                            fontStyle:
-                                                FlutterFlowTheme.of(context)
-                                                    .labelSmall
-                                                    .fontStyle,
                                             lineHeight: 1.45,
                                           ),
                                     ),
                                   ],
                                 ),
                                 LinearPercentIndicator(
-                                  percent: 0.12,
+                                  percent: (currentIndex + 1) / pageViewFetchChaptersContentRowList.length,
                                   lineHeight: 2.0,
                                   animation: false,
                                   animateFromLastPercent: true,

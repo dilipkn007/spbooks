@@ -1,8 +1,8 @@
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
+import '/backend/sqlite/sqlite_manager.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'book_card_model.dart';
 export 'book_card_model.dart';
 
@@ -24,6 +24,7 @@ class BookCardWidget extends StatefulWidget {
 
 class _BookCardWidgetState extends State<BookCardWidget> {
   late BookCardModel _model;
+  bool isBookmarked = false;
 
   @override
   void setState(VoidCallback callback) {
@@ -35,6 +36,28 @@ class _BookCardWidgetState extends State<BookCardWidget> {
   void initState() {
     super.initState();
     _model = createModel(context, () => BookCardModel());
+    _checkBookmarkStatus();
+  }
+
+  Future<void> _checkBookmarkStatus() async {
+    final books = await SQLiteManager.instance.fetchBookmarkedBooks();
+    if (books.any((b) => b.id == widget.bookId)) {
+      safeSetState(() {
+        isBookmarked = true;
+      });
+    }
+  }
+
+  void _toggleBookmark() async {
+    if (widget.bookId == null) return;
+    
+    if (isBookmarked) {
+      await SQLiteManager.instance.removeBookmark(bookId: widget.bookId!, type: "book");
+      safeSetState(() { isBookmarked = false; });
+    } else {
+      await SQLiteManager.instance.addBookmark(bookId: widget.bookId!, type: "book");
+      safeSetState(() { isBookmarked = true; });
+    }
   }
 
   @override
@@ -83,13 +106,16 @@ class _BookCardWidgetState extends State<BookCardWidget> {
                     fit: BoxFit.fill,
                   ),
                   Padding(
-                    padding: EdgeInsets.all(8.0),
+                    padding: EdgeInsets.all(0.0),
                     child: Container(
                       alignment: AlignmentDirectional(1.0, -1.0),
-                      child: FaIcon(
-                        FontAwesomeIcons.bookmark,
-                        color: FlutterFlowTheme.of(context).error,
-                        size: 20.0,
+                      child: IconButton(
+                        icon: Icon(
+                          isBookmarked ? Icons.bookmark_rounded : Icons.bookmark_border_rounded,
+                          color: FlutterFlowTheme.of(context).error,
+                          size: 24.0,
+                        ),
+                        onPressed: _toggleBookmark,
                       ),
                     ),
                   ),

@@ -136,3 +136,55 @@ class SearchContentRow extends SqliteRow {
 }
 
 /// END SEARCHCONTENT
+
+/// BEGIN FETCHBOOKMARKEDBOOKS
+Future<List<FetchBookmarkedBooksRow>> performFetchBookmarkedBooks(
+  Database database,
+) {
+  final query = '''
+SELECT books.*, bookmarks.id as bookmark_id FROM books 
+INNER JOIN bookmarks ON books.id = bookmarks.book_id 
+WHERE bookmarks.type = "book" 
+ORDER BY bookmarks.created_at DESC;
+''';
+  return _readQuery(database, query, (d) => FetchBookmarkedBooksRow(d));
+}
+
+class FetchBookmarkedBooksRow extends SqliteRow {
+  FetchBookmarkedBooksRow(Map<String, dynamic> data) : super(data);
+
+  String? get title => data['title'] as String?;
+  int? get id => data['id'] as int?;
+  String? get author => data['author'] as String?;
+  String? get language => data['language'] as String?;
+  String? get description => data['description'] as String?;
+  String? get cover => data['cover'] as String?;
+  int? get bookmarkId => data['bookmark_id'] as int?;
+}
+/// END FETCHBOOKMARKEDBOOKS
+
+/// BEGIN FETCHBOOKMARKEDPAGES
+Future<List<FetchBookmarkedPagesRow>> performFetchBookmarkedPages(
+  Database database,
+) {
+  final query = '''
+SELECT chapters.*, bookmarks.id as bookmark_id FROM chapters 
+INNER JOIN bookmarks ON chapters.id = bookmarks.chapter_id 
+WHERE bookmarks.type = "pagemark" 
+ORDER BY bookmarks.created_at DESC;
+''';
+  return _readQuery(database, query, (d) => FetchBookmarkedPagesRow(d));
+}
+
+class FetchBookmarkedPagesRow extends SqliteRow {
+  FetchBookmarkedPagesRow(Map<String, dynamic> data) : super(data);
+
+  String get title => data['title'] as String;
+  String get content => data['content'] as String;
+  int get number => data['number'] as int;
+  int get bookId => data['book_id'] as int;
+  int get id => data['id'] as int;
+  int get parentId => data['parent_id'] as int;
+  int? get bookmarkId => data['bookmark_id'] as int?;
+}
+/// END FETCHBOOKMARKEDPAGES

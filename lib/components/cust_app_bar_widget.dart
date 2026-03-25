@@ -7,7 +7,14 @@ import 'cust_app_bar_model.dart';
 export 'cust_app_bar_model.dart';
 
 class CustAppBarWidget extends StatefulWidget {
-  const CustAppBarWidget({super.key});
+  const CustAppBarWidget({
+    super.key,
+    this.isBookmarked = false,
+    this.onBookmarkTap,
+  });
+  
+  final bool isBookmarked;
+  final Future<void> Function()? onBookmarkTap;
 
   @override
   State<CustAppBarWidget> createState() => _CustAppBarWidgetState();
@@ -63,12 +70,14 @@ class _CustAppBarWidgetState extends State<CustAppBarWidget> {
               FlutterFlowIconButton(
                 buttonSize: 40.0,
                 icon: Icon(
-                  Icons.bookmark_border_rounded,
+                  widget.isBookmarked ? Icons.bookmark_rounded : Icons.bookmark_border_rounded,
                   color: FlutterFlowTheme.of(context).primaryText,
                   size: 24.0,
                 ),
-                onPressed: () {
-                  print('IconButton pressed ...');
+                onPressed: () async {
+                  if (widget.onBookmarkTap != null) {
+                    await widget.onBookmarkTap!();
+                  }
                 },
               ),
               FlutterFlowIconButton(

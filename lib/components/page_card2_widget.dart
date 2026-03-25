@@ -1,8 +1,7 @@
-import '/flutter_flow/flutter_flow_choice_chips.dart';
 import '/flutter_flow/flutter_flow_icon_button.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
-import '/flutter_flow/form_field_controller.dart';
+import '/backend/sqlite/sqlite_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'page_card2_model.dart';
@@ -11,16 +10,16 @@ export 'page_card2_model.dart';
 class PageCard2Widget extends StatefulWidget {
   const PageCard2Widget({
     super.key,
-    this.img,
     this.title,
-    this.author,
-    this.category,
+    this.content,
+    this.bookId,
+    this.chapterId,
   });
 
-  final String? img;
   final String? title;
-  final String? author;
-  final String? category;
+  final String? content;
+  final int? bookId;
+  final int? chapterId;
 
   @override
   State<PageCard2Widget> createState() => _PageCard2WidgetState();
@@ -28,6 +27,7 @@ class PageCard2Widget extends StatefulWidget {
 
 class _PageCard2WidgetState extends State<PageCard2Widget> {
   late PageCard2Model _model;
+  bool isBookmarked = false;
 
   @override
   void setState(VoidCallback callback) {
@@ -39,6 +39,28 @@ class _PageCard2WidgetState extends State<PageCard2Widget> {
   void initState() {
     super.initState();
     _model = createModel(context, () => PageCard2Model());
+    _checkBookmarkStatus();
+  }
+
+  Future<void> _checkBookmarkStatus() async {
+    final pages = await SQLiteManager.instance.fetchBookmarkedPages();
+    if (pages.any((p) => p.id == widget.chapterId)) {
+      safeSetState(() {
+        isBookmarked = true;
+      });
+    }
+  }
+
+  void _toggleBookmark() async {
+    if (widget.bookId == null || widget.chapterId == null) return;
+    
+    if (isBookmarked) {
+      await SQLiteManager.instance.removeBookmark(bookId: widget.bookId!, chapterId: widget.chapterId!, type: "pagemark");
+      safeSetState(() { isBookmarked = false; });
+    } else {
+      await SQLiteManager.instance.addBookmark(bookId: widget.bookId!, chapterId: widget.chapterId!, type: "pagemark");
+      safeSetState(() { isBookmarked = true; });
+    }
   }
 
   @override
@@ -75,86 +97,45 @@ class _PageCard2WidgetState extends State<PageCard2Widget> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      valueOrDefault<String>(
-                        widget.title,
-                        'The Silent Patient',
-                      ),
-                      maxLines: 2,
-                      style: FlutterFlowTheme.of(context).titleMedium.override(
-                            font: GoogleFonts.roboto(
-                              fontWeight: FontWeight.bold,
-                              fontStyle: FlutterFlowTheme.of(context)
-                                  .titleMedium
-                                  .fontStyle,
-                            ),
-                            color: FlutterFlowTheme.of(context).primaryText,
-                            fontSize: 16.0,
-                            letterSpacing: 0.0,
-                            fontWeight: FontWeight.bold,
-                            fontStyle: FlutterFlowTheme.of(context)
-                                .titleMedium
-                                .fontStyle,
-                            lineHeight: 1.5,
-                          ),
-                      overflow: TextOverflow.ellipsis,
-                    ),
                     Row(
                       mainAxisSize: MainAxisSize.max,
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        FlutterFlowChoiceChips(
-                          options: [ChipData('Thriller')],
-                          onChanged: (val) => safeSetState(
-                              () => _model.choiceChipsValue = val?.firstOrNull),
-                          selectedChipStyle: ChipStyle(
-                            backgroundColor:
-                                FlutterFlowTheme.of(context).primaryBackground,
-                            textStyle: TextStyle(
-                              color: FlutterFlowTheme.of(context).secondaryText,
+                        Expanded(
+                          child: Text(
+                            valueOrDefault<String>(
+                              widget.title,
+                              'The Silent Patient',
                             ),
-                            iconColor:
-                                FlutterFlowTheme.of(context).secondaryText,
-                            iconSize: 0.0,
-                            labelPadding: EdgeInsetsDirectional.fromSTEB(
-                                0.0, 0.0, 0.0, 0.0),
-                            elevation: 0.0,
-                            borderWidth: 0.0,
-                            borderRadius: BorderRadius.circular(8.0),
+                            maxLines: 2,
+                            style: FlutterFlowTheme.of(context).titleMedium.override(
+                                  font: GoogleFonts.roboto(
+                                    fontWeight: FontWeight.bold,
+                                    fontStyle: FlutterFlowTheme.of(context)
+                                        .titleMedium
+                                        .fontStyle,
+                                  ),
+                                  color: FlutterFlowTheme.of(context).primaryText,
+                                  fontSize: 16.0,
+                                  letterSpacing: 0.0,
+                                  fontWeight: FontWeight.bold,
+                                  fontStyle: FlutterFlowTheme.of(context)
+                                      .titleMedium
+                                      .fontStyle,
+                                  lineHeight: 1.5,
+                                ),
+                            overflow: TextOverflow.ellipsis,
                           ),
-                          unselectedChipStyle: ChipStyle(
-                            backgroundColor: Color(0x00000000),
-                            textStyle: TextStyle(
-                              color: FlutterFlowTheme.of(context).secondaryText,
-                            ),
-                            iconColor:
-                                FlutterFlowTheme.of(context).secondaryText,
-                            iconSize: 0.0,
-                            labelPadding: EdgeInsetsDirectional.fromSTEB(
-                                0.0, 0.0, 0.0, 0.0),
-                            elevation: 0.0,
-                            borderWidth: 0.0,
-                            borderRadius: BorderRadius.circular(8.0),
-                          ),
-                          chipSpacing: 0.0,
-                          multiselect: false,
-                          controller: _model.choiceChipsValueController ??=
-                              FormFieldController<List<String>>(
-                            [],
-                          ),
-                          wrapped: false,
                         ),
                         FlutterFlowIconButton(
                           buttonSize: 40.0,
                           icon: Icon(
-                            Icons.bookmark_remove_rounded,
+                            isBookmarked ? Icons.bookmark_rounded : Icons.bookmark_border_rounded,
                             color: Color(0xFFC4836A),
                             size: 20.0,
                           ),
-                          onPressed: () {
-                            print('IconButton pressed ...');
-                          },
+                          onPressed: _toggleBookmark,
                         ),
                       ],
                     ),

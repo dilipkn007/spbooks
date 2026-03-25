@@ -2,6 +2,7 @@ import '/components/book_card2_widget.dart';
 import '/components/page_card2_widget.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
+import '/backend/sqlite/sqlite_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'bookmarks_copy_model.dart';
@@ -270,97 +271,62 @@ class _BookmarksCopyWidgetState extends State<BookmarksCopyWidget>
                             child: TabBarView(
                               controller: _model.tabBarController,
                               children: [
-                                SingleChildScrollView(
-                                  child: Column(
-                                    mainAxisSize: MainAxisSize.max,
-                                    children: [
-                                      wrapWithModel(
-                                        model: _model.bookCard2Model1,
-                                        updateCallback: () =>
-                                            safeSetState(() {}),
-                                        child: BookCard2Widget(
-                                          img:
-                                              'book cover psychological thriller',
-                                          title: 'The Silent Patient',
-                                          author: 'Alex Michaelides',
-                                          category: 'Thriller',
-                                        ),
+                                FutureBuilder<List<FetchBookmarkedBooksRow>>(
+                                  future: SQLiteManager.instance.fetchBookmarkedBooks(),
+                                  builder: (context, snapshot) {
+                                    if (!snapshot.hasData) {
+                                      return Center(child: CircularProgressIndicator(color: FlutterFlowTheme.of(context).primary));
+                                    }
+                                    final books = snapshot.data!;
+                                    if (books.isEmpty) {
+                                      return Center(child: Text('No bookmarked books.'));
+                                    }
+                                    return SingleChildScrollView(
+                                      child: Column(
+                                        mainAxisSize: MainAxisSize.max,
+                                        children: books.map((book) {
+                                          return BookCard2Widget(
+                                            img: book.cover ?? 'book cover psychological thriller',
+                                            title: book.title ?? 'Unknown',
+                                            author: book.author ?? 'Unknown',
+                                            category: book.language ?? 'Unknown',
+                                            bookId: book.id,
+                                          );
+                                        }).toList()
+                                          .divide(SizedBox(height: 4.0))
+                                          .addToStart(SizedBox(height: 4.0))
+                                          .addToEnd(SizedBox(height: 100.0)),
                                       ),
-                                      wrapWithModel(
-                                        model: _model.bookCard2Model2,
-                                        updateCallback: () =>
-                                            safeSetState(() {}),
-                                        child: BookCard2Widget(
-                                          img:
-                                              'book cover psychological thriller',
-                                          title: 'The Silent Patient',
-                                          author: 'Alex Michaelides',
-                                          category: 'Thriller',
-                                        ),
-                                      ),
-                                      wrapWithModel(
-                                        model: _model.bookCard2Model3,
-                                        updateCallback: () =>
-                                            safeSetState(() {}),
-                                        child: BookCard2Widget(
-                                          img:
-                                              'book cover psychological thriller',
-                                          title: 'The Silent Patient',
-                                          author: 'Alex Michaelides',
-                                          category: 'Thriller',
-                                        ),
-                                      ),
-                                      wrapWithModel(
-                                        model: _model.bookCard2Model4,
-                                        updateCallback: () =>
-                                            safeSetState(() {}),
-                                        child: BookCard2Widget(
-                                          img:
-                                              'book cover psychological thriller',
-                                          title: 'The Silent Patient',
-                                          author: 'Alex Michaelides',
-                                          category: 'Thriller',
-                                        ),
-                                      ),
-                                      wrapWithModel(
-                                        model: _model.bookCard2Model5,
-                                        updateCallback: () =>
-                                            safeSetState(() {}),
-                                        child: BookCard2Widget(
-                                          img:
-                                              'book cover psychological thriller',
-                                          title: 'The Silent Patient',
-                                          author: 'Alex Michaelides',
-                                          category: 'Thriller',
-                                        ),
-                                      ),
-                                      wrapWithModel(
-                                        model: _model.bookCard2Model6,
-                                        updateCallback: () =>
-                                            safeSetState(() {}),
-                                        child: BookCard2Widget(
-                                          img:
-                                              'book cover psychological thriller',
-                                          title: 'The Silent Patient',
-                                          author: 'Alex Michaelides',
-                                          category: 'Thriller',
-                                        ),
-                                      ),
-                                    ]
-                                        .divide(SizedBox(height: 4.0))
-                                        .addToStart(SizedBox(height: 4.0))
-                                        .addToEnd(SizedBox(height: 100.0)),
-                                  ),
+                                    );
+                                  },
                                 ),
-                                Column(
-                                  mainAxisSize: MainAxisSize.max,
-                                  children: [
-                                    wrapWithModel(
-                                      model: _model.pageCard2Model,
-                                      updateCallback: () => safeSetState(() {}),
-                                      child: PageCard2Widget(),
-                                    ),
-                                  ],
+                                FutureBuilder<List<FetchBookmarkedPagesRow>>(
+                                  future: SQLiteManager.instance.fetchBookmarkedPages(),
+                                  builder: (context, snapshot) {
+                                    if (!snapshot.hasData) {
+                                      return Center(child: CircularProgressIndicator(color: FlutterFlowTheme.of(context).primary));
+                                    }
+                                    final pages = snapshot.data!;
+                                    if (pages.isEmpty) {
+                                      return Center(child: Text('No bookmarked pages.'));
+                                    }
+                                    return SingleChildScrollView(
+                                      child: Column(
+                                        mainAxisSize: MainAxisSize.max,
+                                        children: pages.map((pageData) {
+                                          return PageCard2Widget(
+                                            title: '${pageData.number ?? ''}. ${pageData.title ?? ''}',
+                                            content: pageData.content ?? '',
+                                            bookId: pageData.bookId,
+                                            chapterId: pageData.id,
+                                          );
+                                        }).toList()
+                                          .divide(SizedBox(height: 4.0))
+                                          .addToStart(SizedBox(height: 4.0))
+                                          .addToEnd(SizedBox(height: 100.0)),
+                                      ),
+                                    );
+                                  },
                                 ),
                               ],
                             ),

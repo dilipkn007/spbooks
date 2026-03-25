@@ -30,5 +30,14 @@ Future<Database> initializeDatabaseFromDbFile(
   }
   // Initialize the SQLite database.
   final database = await openDatabase(databasePath);
+  await database.execute('''
+    CREATE TABLE IF NOT EXISTS bookmarks (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      book_id INTEGER NOT NULL,
+      chapter_id INTEGER,
+      type TEXT NOT NULL,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+  ''');
   return database;
 }
