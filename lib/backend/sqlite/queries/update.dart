@@ -34,3 +34,17 @@ Future performRemoveBookmark(
   }
 }
 /// END REMOVEBOOKMARK
+
+/// BEGIN UPDATEREADINGHISTORY
+Future performUpdateReadingHistory(
+  Database database, {
+  required int bookId,
+  int? chapterId,
+  required double percent,
+}) async {
+  await database.rawInsert(
+    'INSERT OR REPLACE INTO reading_history (book_id, chapter_id, percent, updated_at) VALUES (?, ?, ?, CURRENT_TIMESTAMP)',
+    [bookId, chapterId, percent],
+  );
+}
+/// END UPDATEREADINGHISTORY

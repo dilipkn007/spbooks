@@ -44,6 +44,7 @@ class _ReaderViewWidgetState extends State<ReaderViewWidget>
   List<FetchChaptersContentRow>? chapters;
   Set<int> bookmarkedChapterIds = {};
   double _currentScrollFraction = 0.0;
+  double _lastSavedScrollFraction = 0.0;
 
   final scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -199,7 +200,13 @@ class _ReaderViewWidgetState extends State<ReaderViewWidget>
                                                               1))),
                                           onPageChanged: (_) async {
                                             _currentScrollFraction = 0.0;
+                                            _lastSavedScrollFraction = 0.0;
                                             safeSetState(() {});
+                                            SQLiteManager.instance.updateReadingHistory(
+                                              bookId: widget.bookId!,
+                                              chapterId: pageViewFetchChaptersContentRowList[_model.pageViewController?.page?.round() ?? 0].id,
+                                              percent: (((_model.pageViewController?.page?.round() ?? 0) + _currentScrollFraction) / pageViewFetchChaptersContentRowList.length),
+                                            );
                                           },
                                           scrollDirection: Axis.horizontal,
                                           itemCount:
@@ -223,6 +230,14 @@ class _ReaderViewWidgetState extends State<ReaderViewWidget>
                                                           safeSetState(() {
                                                             _currentScrollFraction = clampedFraction;
                                                           });
+                                                          if ((clampedFraction - _lastSavedScrollFraction).abs() > 0.05) {
+                                                            _lastSavedScrollFraction = clampedFraction;
+                                                            SQLiteManager.instance.updateReadingHistory(
+                                                              bookId: widget.bookId!,
+                                                              chapterId: pageViewFetchChaptersContentRowList[_model.pageViewController?.page?.round() ?? 0].id,
+                                                              percent: (((_model.pageViewController?.page?.round() ?? 0) + clampedFraction) / pageViewFetchChaptersContentRowList.length),
+                                                            );
+                                                          }
                                                         }
                                                       }
                                                       return false;
@@ -487,8 +502,7 @@ class _ReaderViewWidgetState extends State<ReaderViewWidget>
                                   lineHeight: 2.0,
                                   animation: false,
                                   animateFromLastPercent: true,
-                                  progressColor:
-                                      FlutterFlowTheme.of(context).primaryText,
+                                  progressColor: Color(0xFFEE8B60),
                                   backgroundColor:
                                       FlutterFlowTheme.of(context).alternate,
                                   barRadius: Radius.circular(1.0),

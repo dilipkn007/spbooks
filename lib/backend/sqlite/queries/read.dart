@@ -190,3 +190,30 @@ class FetchBookmarkedPagesRow extends SqliteRow {
   int? get bookmarkId => data['bookmark_id'] as int?;
 }
 /// END FETCHBOOKMARKEDPAGES
+
+/// BEGIN FETCHREADINGHISTORY
+Future<List<FetchReadingHistoryRow>> performFetchReadingHistory(
+  Database database,
+) {
+  final query = '''
+SELECT books.*, reading_history.chapter_id, reading_history.percent, reading_history.updated_at, chapters.number 
+FROM reading_history 
+INNER JOIN books ON reading_history.book_id = books.id 
+LEFT JOIN chapters ON reading_history.chapter_id = chapters.id
+ORDER BY reading_history.updated_at DESC LIMIT 1;
+''';
+  return _readQuery(database, query, (d) => FetchReadingHistoryRow(d));
+}
+
+class FetchReadingHistoryRow extends SqliteRow {
+  FetchReadingHistoryRow(Map<String, dynamic> data) : super(data);
+
+  String? get title => data['title'] as String?;
+  int? get id => data['id'] as int?;
+  String? get author => data['author'] as String?;
+  String? get cover => (data['cover'] as String?)?.trim();
+  int? get chapterId => data['chapter_id'] as int?;
+  double? get percent => data['percent'] as double?;
+  int? get number => data['number'] as int?;
+}
+/// END FETCHREADINGHISTORY

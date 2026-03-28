@@ -39,5 +39,13 @@ Future<Database> initializeDatabaseFromDbFile(
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )
   ''');
+  await database.execute('''
+    CREATE TABLE IF NOT EXISTS reading_history (
+      book_id INTEGER PRIMARY KEY,
+      chapter_id INTEGER,
+      percent REAL NOT NULL DEFAULT 0,
+      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+  ''');
   return database;
 }

@@ -88,6 +88,11 @@ class SQLiteManager {
         _database,
       );
 
+  Future<List<FetchReadingHistoryRow>> fetchReadingHistory() =>
+      performFetchReadingHistory(
+        _database,
+      );
+
   /// START UPDATE QUERY CALLS
 
   Future addBookmark({
@@ -112,6 +117,18 @@ class SQLiteManager {
         bookId: bookId,
         chapterId: chapterId,
         type: type,
+      );
+
+  Future updateReadingHistory({
+    required int bookId,
+    int? chapterId,
+    required double percent,
+  }) =>
+      performUpdateReadingHistory(
+        _database,
+        bookId: bookId,
+        chapterId: chapterId,
+        percent: percent,
       );
 
   /// END UPDATE QUERY CALLS

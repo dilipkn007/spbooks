@@ -144,244 +144,197 @@ class _BooksLibraryWidgetState extends State<BooksLibraryWidget> {
                       ].divide(SizedBox(width: 16.0)),
                     ),
                   ),
-                  Column(
-                    mainAxisSize: MainAxisSize.min,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      wrapWithModel(
-                        model: _model.sectionHeaderModel1,
-                        updateCallback: () => safeSetState(() {}),
-                        child: SectionHeaderWidget(
-                          title: 'Continue Reading',
-                          action_label: 'History',
-                          show_action: 'true',
-                        ),
-                      ),
-                      Container(
-                        decoration: BoxDecoration(
-                          color:
-                              FlutterFlowTheme.of(context).secondaryBackground,
-                          boxShadow: [
-                            BoxShadow(
-                              blurRadius: 2.0,
-                              color: Color(0x1A000000),
-                              offset: Offset(
-                                0.0,
-                                1.0,
-                              ),
-                              spreadRadius: 0.0,
-                            )
-                          ],
-                          borderRadius: BorderRadius.circular(32.0),
-                          border: Border.all(
-                            color: FlutterFlowTheme.of(context).alternate,
-                            width: 1.0,
+                  FutureBuilder<List<FetchReadingHistoryRow>>(
+                    future: SQLiteManager.instance.fetchReadingHistory(),
+                    builder: (context, snapshot) {
+                      if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                        return SizedBox.shrink();
+                      }
+                      final historyRow = snapshot.data!.first;
+                      return Column(
+                        mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          wrapWithModel(
+                            model: _model.sectionHeaderModel1,
+                            updateCallback: () => safeSetState(() {}),
+                            child: SectionHeaderWidget(
+                              title: 'Continue Reading',
+                              action_label: 'History',
+                              show_action: 'true',
+                            ),
                           ),
-                        ),
-                        child: Padding(
-                          padding: EdgeInsets.all(20.0),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.max,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              ClipRRect(
-                                borderRadius: BorderRadius.circular(16.0),
-                                child: Container(
-                                  width: 100.0,
-                                  height: 140.0,
-                                  decoration: BoxDecoration(
-                                    boxShadow: [
-                                      BoxShadow(
-                                        blurRadius: 2.0,
-                                        color: Color(0x1A000000),
-                                        offset: Offset(
-                                          0.0,
-                                          1.0,
-                                        ),
-                                        spreadRadius: 0.0,
-                                      )
-                                    ],
-                                    borderRadius: BorderRadius.circular(16.0),
-                                  ),
-                                  child: CachedNetworkImage(
-                                    fadeInDuration: Duration(milliseconds: 0),
-                                    fadeOutDuration: Duration(milliseconds: 0),
-                                    imageUrl:
-                                        'https://dimg.dreamflow.cloud/v1/image/book cover minimalist architecture',
-                                    width: double.infinity,
-                                    height: double.infinity,
-                                    fit: BoxFit.cover,
-                                  ),
+                          InkWell(
+                            onTap: () async {
+                              context.pushNamed(
+                                ReaderViewWidget.routeName,
+                                queryParameters: {
+                                  'bookId': serializeParam(historyRow.id, ParamType.int),
+                                  'chapterNumber': serializeParam(historyRow.number ?? 1, ParamType.int),
+                                  'parentId': serializeParam(0, ParamType.int),
+                                }.withoutNulls,
+                              );
+                            },
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: FlutterFlowTheme.of(context).secondaryBackground,
+                                boxShadow: [
+                                  BoxShadow(
+                                    blurRadius: 2.0,
+                                    color: Color(0x1A000000),
+                                    offset: Offset(0.0, 1.0),
+                                    spreadRadius: 0.0,
+                                  )
+                                ],
+                                borderRadius: BorderRadius.circular(32.0),
+                                border: Border.all(
+                                  color: FlutterFlowTheme.of(context).alternate,
+                                  width: 1.0,
                                 ),
                               ),
-                              Expanded(
-                                flex: 1,
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.min,
+                              child: Padding(
+                                padding: EdgeInsets.all(20.0),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.max,
                                   mainAxisAlignment: MainAxisAlignment.start,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
-                                    Container(
-                                      decoration: BoxDecoration(
-                                        color: FlutterFlowTheme.of(context)
-                                            .tertiary,
-                                        borderRadius:
-                                            BorderRadius.circular(16.0),
-                                      ),
-                                      child: Padding(
-                                        padding: EdgeInsetsDirectional.fromSTEB(
-                                            10.0, 4.0, 10.0, 4.0),
-                                        child: Text(
-                                          'Architecture',
-                                          style: FlutterFlowTheme.of(context)
-                                              .labelSmall
-                                              .override(
-                                                font: GoogleFonts.roboto(
-                                                  fontWeight: FontWeight.bold,
-                                                  fontStyle:
-                                                      FlutterFlowTheme.of(
-                                                              context)
-                                                          .labelSmall
-                                                          .fontStyle,
-                                                ),
-                                                color:
-                                                    FlutterFlowTheme.of(context)
-                                                        .primaryBackground,
-                                                fontSize: 11.0,
-                                                letterSpacing: 0.0,
-                                                fontWeight: FontWeight.bold,
-                                                fontStyle:
-                                                    FlutterFlowTheme.of(context)
-                                                        .labelSmall
-                                                        .fontStyle,
-                                                lineHeight: 1.45,
-                                              ),
+                                    ClipRRect(
+                                      borderRadius: BorderRadius.circular(16.0),
+                                      child: Container(
+                                        width: 100.0,
+                                        height: 140.0,
+                                        decoration: BoxDecoration(
+                                          boxShadow: [
+                                            BoxShadow(
+                                              blurRadius: 2.0,
+                                              color: Color(0x1A000000),
+                                              offset: Offset(0.0, 1.0),
+                                              spreadRadius: 0.0,
+                                            )
+                                          ],
+                                          borderRadius: BorderRadius.circular(16.0),
+                                        ),
+                                        child: CachedNetworkImage(
+                                          fadeInDuration: Duration(milliseconds: 0),
+                                          fadeOutDuration: Duration(milliseconds: 0),
+                                          imageUrl: historyRow.cover ?? '',
+                                          width: double.infinity,
+                                          height: double.infinity,
+                                          fit: BoxFit.fill,
                                         ),
                                       ),
                                     ),
-                                    Text(
-                                      'The Minimalist Way',
-                                      maxLines: 2,
-                                      style: FlutterFlowTheme.of(context)
-                                          .titleMedium
-                                          .override(
-                                            font: GoogleFonts.roboto(
-                                              fontWeight: FontWeight.bold,
-                                              fontStyle:
-                                                  FlutterFlowTheme.of(context)
+                                    Expanded(
+                                      flex: 1,
+                                      child: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        mainAxisAlignment: MainAxisAlignment.start,
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            historyRow.title ?? 'Unknown Title',
+                                            maxLines: 2,
+                                            style: FlutterFlowTheme.of(context)
+                                                .titleMedium
+                                                .override(
+                                                  font: GoogleFonts.roboto(
+                                                    fontWeight: FontWeight.bold,
+                                                    fontStyle: FlutterFlowTheme.of(context)
+                                                        .titleMedium
+                                                        .fontStyle,
+                                                  ),
+                                                  color: FlutterFlowTheme.of(context).primaryText,
+                                                  fontSize: 16.0,
+                                                  letterSpacing: 0.0,
+                                                  fontWeight: FontWeight.bold,
+                                                  fontStyle: FlutterFlowTheme.of(context)
                                                       .titleMedium
                                                       .fontStyle,
-                                            ),
-                                            color: FlutterFlowTheme.of(context)
-                                                .primaryText,
-                                            fontSize: 16.0,
-                                            letterSpacing: 0.0,
-                                            fontWeight: FontWeight.bold,
-                                            fontStyle:
-                                                FlutterFlowTheme.of(context)
-                                                    .titleMedium
-                                                    .fontStyle,
-                                            lineHeight: 1.5,
+                                                  lineHeight: 1.5,
+                                                ),
                                           ),
-                                    ),
-                                    Text(
-                                      'By Erica Layne',
-                                      style: FlutterFlowTheme.of(context)
-                                          .bodySmall
-                                          .override(
-                                            font: GoogleFonts.roboto(
-                                              fontWeight: FontWeight.normal,
-                                              fontStyle:
-                                                  FlutterFlowTheme.of(context)
+                                          Text(
+                                            historyRow.author != null ? 'By ${historyRow.author}' : 'Unknown Author',
+                                            style: FlutterFlowTheme.of(context)
+                                                .bodySmall
+                                                .override(
+                                                  font: GoogleFonts.roboto(
+                                                    fontWeight: FontWeight.normal,
+                                                    fontStyle: FlutterFlowTheme.of(context)
+                                                        .bodySmall
+                                                        .fontStyle,
+                                                  ),
+                                                  color: FlutterFlowTheme.of(context).secondaryText,
+                                                  fontSize: 12.0,
+                                                  letterSpacing: 0.0,
+                                                  fontWeight: FontWeight.normal,
+                                                  fontStyle: FlutterFlowTheme.of(context)
                                                       .bodySmall
                                                       .fontStyle,
-                                            ),
-                                            color: FlutterFlowTheme.of(context)
-                                                .secondaryText,
-                                            fontSize: 12.0,
-                                            letterSpacing: 0.0,
-                                            fontWeight: FontWeight.normal,
-                                            fontStyle:
-                                                FlutterFlowTheme.of(context)
-                                                    .bodySmall
-                                                    .fontStyle,
-                                            lineHeight: 1.33,
+                                                  lineHeight: 1.33,
+                                                ),
                                           ),
-                                    ),
-                                    Container(
-                                      height: 8.0,
-                                    ),
-                                    Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Row(
-                                          mainAxisSize: MainAxisSize.max,
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.center,
-                                          children: [
-                                            Text(
-                                              '65% Read',
-                                              style: FlutterFlowTheme.of(
-                                                      context)
-                                                  .labelSmall
-                                                  .override(
-                                                    font: GoogleFonts.roboto(
-                                                      fontWeight:
-                                                          FontWeight.w600,
-                                                      fontStyle:
-                                                          FlutterFlowTheme.of(
-                                                                  context)
+                                          Container(
+                                            height: 8.0,
+                                          ),
+                                          Column(
+                                            mainAxisSize: MainAxisSize.min,
+                                            mainAxisAlignment: MainAxisAlignment.start,
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              Row(
+                                                mainAxisSize: MainAxisSize.max,
+                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                crossAxisAlignment: CrossAxisAlignment.center,
+                                                children: [
+                                                  Text(
+                                                    '${((historyRow.percent ?? 0.0) * 100).toInt()}% Read',
+                                                    style: FlutterFlowTheme.of(context)
+                                                        .labelSmall
+                                                        .override(
+                                                          font: GoogleFonts.roboto(
+                                                            fontWeight: FontWeight.w600,
+                                                            fontStyle: FlutterFlowTheme.of(context)
+                                                                .labelSmall
+                                                                .fontStyle,
+                                                          ),
+                                                          color: FlutterFlowTheme.of(context).primaryText,
+                                                          fontSize: 11.0,
+                                                          letterSpacing: 0.0,
+                                                          fontWeight: FontWeight.w600,
+                                                          fontStyle: FlutterFlowTheme.of(context)
                                                               .labelSmall
                                                               .fontStyle,
-                                                    ),
-                                                    color: FlutterFlowTheme.of(
-                                                            context)
-                                                        .primaryText,
-                                                    fontSize: 11.0,
-                                                    letterSpacing: 0.0,
-                                                    fontWeight: FontWeight.w600,
-                                                    fontStyle:
-                                                        FlutterFlowTheme.of(
-                                                                context)
-                                                            .labelSmall
-                                                            .fontStyle,
-                                                    lineHeight: 1.45,
+                                                          lineHeight: 1.45,
+                                                        ),
                                                   ),
-                                            ),
-                                          ],
-                                        ),
-                                        LinearPercentIndicator(
-                                          percent: 0.65,
-                                          lineHeight: 8.0,
-                                          animation: false,
-                                          animateFromLastPercent: true,
-                                          progressColor:
-                                              FlutterFlowTheme.of(context)
-                                                  .primary,
-                                          backgroundColor:
-                                              FlutterFlowTheme.of(context)
-                                                  .alternate,
-                                          barRadius: Radius.circular(4.0),
-                                          padding: EdgeInsets.zero,
-                                        ),
-                                      ].divide(SizedBox(height: 4.0)),
+                                                ],
+                                              ),
+                                              LinearPercentIndicator(
+                                                percent: (historyRow.percent ?? 0.0).clamp(0.0, 1.0),
+                                                lineHeight: 8.0,
+                                                animation: true,
+                                                animationDuration: 1000,
+                                                progressColor: Color(0xFFEE8B60),
+                                                backgroundColor: FlutterFlowTheme.of(context).alternate,
+                                                barRadius: Radius.circular(4.0),
+                                                padding: EdgeInsets.zero,
+                                              ),
+                                            ].divide(SizedBox(height: 4.0)),
+                                          ),
+                                        ].divide(SizedBox(height: 8.0)),
+                                      ),
                                     ),
-                                  ].divide(SizedBox(height: 8.0)),
+                                  ].divide(SizedBox(width: 24.0)),
                                 ),
                               ),
-                            ].divide(SizedBox(width: 24.0)),
+                            ),
                           ),
-                        ),
-                      ),
-                    ].divide(SizedBox(height: 4.0)),
+                        ].divide(SizedBox(height: 4.0)),
+                      );
+                    },
                   ),
                   Column(
                     mainAxisSize: MainAxisSize.min,
