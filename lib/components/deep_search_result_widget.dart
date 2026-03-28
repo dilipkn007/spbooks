@@ -91,7 +91,7 @@ class _DeepSearchResultWidgetState extends State<DeepSearchResultWidget> {
                       child: CachedNetworkImage(
                         fadeInDuration: Duration(milliseconds: 0),
                         fadeOutDuration: Duration(milliseconds: 0),
-                        imageUrl: widget.image!,
+                        imageUrl: widget.image!.trim(),
                         width: double.infinity,
                         height: double.infinity,
                         fit: BoxFit.cover,

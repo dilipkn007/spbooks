@@ -26,7 +26,7 @@ class ReadAllBooksNamesRow extends SqliteRow {
   String? get author => data['author'] as String?;
   String? get language => data['language'] as String?;
   String? get description => data['description'] as String?;
-  String? get cover => data['cover'] as String?;
+  String? get cover => (data['cover'] as String?)?.trim();
 }
 
 /// END READ ALL BOOKS NAMES
@@ -114,12 +114,13 @@ Future<List<SearchContentRow>> performSearchContent(
   String? content,
 }) {
   final query = '''
-SELECT * 
+SELECT chapters.*, books.cover as book_cover 
 FROM chapters 
-WHERE (${bookId} = -1 OR book_id = ${bookId})
-  AND (${chapterId} = -1 OR number = ${chapterId})
-  AND content LIKE '%${content}%' COLLATE NOCASE
-ORDER BY book_id, number;
+LEFT JOIN books ON chapters.book_id = books.id
+WHERE (${bookId} = -1 OR chapters.book_id = ${bookId})
+  AND (${chapterId} = -1 OR chapters.number = ${chapterId})
+  AND chapters.content LIKE '%${content}%' COLLATE NOCASE
+ORDER BY chapters.book_id, chapters.number;
 ''';
   return _readQuery(database, query, (d) => SearchContentRow(d));
 }
@@ -133,6 +134,7 @@ class SearchContentRow extends SqliteRow {
   String? get title => data['title'] as String?;
   String? get content => data['content'] as String?;
   int? get parent => data['parent'] as int?;
+  String? get bookCover => (data['book_cover'] as String?)?.trim();
 }
 
 /// END SEARCHCONTENT
@@ -158,7 +160,7 @@ class FetchBookmarkedBooksRow extends SqliteRow {
   String? get author => data['author'] as String?;
   String? get language => data['language'] as String?;
   String? get description => data['description'] as String?;
-  String? get cover => data['cover'] as String?;
+  String? get cover => (data['cover'] as String?)?.trim();
   int? get bookmarkId => data['bookmark_id'] as int?;
 }
 /// END FETCHBOOKMARKEDBOOKS

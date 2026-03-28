@@ -43,6 +43,7 @@ class _ReaderViewWidgetState extends State<ReaderViewWidget>
   late ReaderViewModel _model;
   List<FetchChaptersContentRow>? chapters;
   Set<int> bookmarkedChapterIds = {};
+  double _currentScrollFraction = 0.0;
 
   final scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -197,6 +198,7 @@ class _ReaderViewWidgetState extends State<ReaderViewWidget>
                                                                   .length -
                                                               1))),
                                           onPageChanged: (_) async {
+                                            _currentScrollFraction = 0.0;
                                             safeSetState(() {});
                                           },
                                           scrollDirection: Axis.horizontal,
@@ -212,11 +214,24 @@ class _ReaderViewWidgetState extends State<ReaderViewWidget>
                                               mainAxisSize: MainAxisSize.max,
                                               children: [
                                                 Expanded(
-                                                  child: SingleChildScrollView(
-                                                    child: Column(
-                                                      mainAxisSize:
-                                                          MainAxisSize.max,
-                                                      children: [
+                                                  child: NotificationListener<ScrollNotification>(
+                                                    onNotification: (ScrollNotification scrollInfo) {
+                                                      if (scrollInfo.metrics.axis == Axis.vertical && scrollInfo.metrics.maxScrollExtent > 0) {
+                                                        final fraction = scrollInfo.metrics.pixels / scrollInfo.metrics.maxScrollExtent;
+                                                        final clampedFraction = fraction.clamp(0.0, 1.0);
+                                                        if ((clampedFraction - _currentScrollFraction).abs() > 0.01) {
+                                                          safeSetState(() {
+                                                            _currentScrollFraction = clampedFraction;
+                                                          });
+                                                        }
+                                                      }
+                                                      return false;
+                                                    },
+                                                    child: SingleChildScrollView(
+                                                      child: Column(
+                                                        mainAxisSize:
+                                                            MainAxisSize.max,
+                                                        children: [
                                                         Padding(
                                                           padding:
                                                               EdgeInsetsDirectional
@@ -323,6 +338,7 @@ class _ReaderViewWidgetState extends State<ReaderViewWidget>
                                                     ),
                                                   ),
                                                 ),
+                                              ),
                                               ],
                                             );
                                           },
@@ -425,7 +441,7 @@ class _ReaderViewWidgetState extends State<ReaderViewWidget>
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
                                     Text(
-                                      '${(((currentIndex + 1) / pageViewFetchChaptersContentRowList.length) * 100).toInt()}% read',
+                                      '${(((currentIndex + _currentScrollFraction) / pageViewFetchChaptersContentRowList.length) * 100).toInt()}% read',
                                       style: FlutterFlowTheme.of(context)
                                           .labelSmall
                                           .override(
@@ -467,7 +483,7 @@ class _ReaderViewWidgetState extends State<ReaderViewWidget>
                                   ],
                                 ),
                                 LinearPercentIndicator(
-                                  percent: (currentIndex + 1) / pageViewFetchChaptersContentRowList.length,
+                                  percent: ((currentIndex + _currentScrollFraction) / pageViewFetchChaptersContentRowList.length).clamp(0.0, 1.0),
                                   lineHeight: 2.0,
                                   animation: false,
                                   animateFromLastPercent: true,

@@ -100,7 +100,7 @@ class _BookCardWidgetState extends State<BookCardWidget> {
                   CachedNetworkImage(
                     fadeInDuration: Duration(milliseconds: 0),
                     fadeOutDuration: Duration(milliseconds: 0),
-                    imageUrl: widget.coverImage!,
+                    imageUrl: widget.coverImage!.trim(),
                     width: double.infinity,
                     height: double.infinity,
                     fit: BoxFit.fill,

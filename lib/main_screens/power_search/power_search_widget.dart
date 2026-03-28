@@ -5,7 +5,6 @@ import '/flutter_flow/flutter_flow_icon_button.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/form_field_controller.dart';
-import '/flutter_flow/random_data_util.dart' as random_data;
 import '/index.dart';
 import 'package:easy_debounce/easy_debounce.dart';
 import 'package:flutter/material.dart';
@@ -738,10 +737,7 @@ class _PowerSearchWidgetState extends State<PowerSearchWidget> {
                                   snippet_end:
                                       'actually improves long-term retention',
                                   chapterNumber: _model.chapter?.toString(),
-                                  image: random_data.randomImageUrl(
-                                    0,
-                                    0,
-                                  ),
+                                  image: columnSearchContentRow.bookCover ?? '',
                                 ),
                               );
                             }).divide(SizedBox(height: 0.0)),
