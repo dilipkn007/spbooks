@@ -136,7 +136,7 @@ class _SettingsWidgetState extends State<SettingsWidget> {
                     child: Container(
                       decoration: BoxDecoration(
                         color: FlutterFlowTheme.of(context).secondaryBackground,
-                        borderRadius: BorderRadius.circular(32.0),
+                        borderRadius: BorderRadius.circular(12.0),
                         border: Border.all(
                           color: FlutterFlowTheme.of(context).alternate,
                           width: 1.0,
@@ -250,7 +250,7 @@ class _SettingsWidgetState extends State<SettingsWidget> {
                                   fontSize: 14.0,
                                 ),
                                 elevation: 0.0,
-                                borderRadius: BorderRadius.circular(16.0),
+                                borderRadius: BorderRadius.circular(8.0),
                               ),
                             ),
                           ].divide(SizedBox(width: 24.0)),
@@ -289,7 +289,7 @@ class _SettingsWidgetState extends State<SettingsWidget> {
                           decoration: BoxDecoration(
                             color: FlutterFlowTheme.of(context)
                                 .secondaryBackground,
-                            borderRadius: BorderRadius.circular(24.0),
+                            borderRadius: BorderRadius.circular(8.0),
                             border: Border.all(
                               color: FlutterFlowTheme.of(context).alternate,
                               width: 1.0,
@@ -308,7 +308,7 @@ class _SettingsWidgetState extends State<SettingsWidget> {
                                   decoration: BoxDecoration(
                                     color: FlutterFlowTheme.of(context)
                                         .primaryBackground,
-                                    borderRadius: BorderRadius.circular(16.0),
+                                    borderRadius: BorderRadius.circular(8.0),
                                   ),
                                   alignment: AlignmentDirectional(0.0, 0.0),
                                   child: Icon(
@@ -398,7 +398,7 @@ class _SettingsWidgetState extends State<SettingsWidget> {
                           decoration: BoxDecoration(
                             color: FlutterFlowTheme.of(context)
                                 .secondaryBackground,
-                            borderRadius: BorderRadius.circular(24.0),
+                            borderRadius: BorderRadius.circular(8.0),
                             border: Border.all(
                               color: FlutterFlowTheme.of(context).alternate,
                               width: 1.0,
@@ -417,7 +417,7 @@ class _SettingsWidgetState extends State<SettingsWidget> {
                                   decoration: BoxDecoration(
                                     color: FlutterFlowTheme.of(context)
                                         .primaryBackground,
-                                    borderRadius: BorderRadius.circular(16.0),
+                                    borderRadius: BorderRadius.circular(8.0),
                                   ),
                                   alignment: AlignmentDirectional(0.0, 0.0),
                                   child: Icon(
@@ -505,7 +505,7 @@ class _SettingsWidgetState extends State<SettingsWidget> {
                           decoration: BoxDecoration(
                             color: FlutterFlowTheme.of(context)
                                 .secondaryBackground,
-                            borderRadius: BorderRadius.circular(24.0),
+                            borderRadius: BorderRadius.circular(8.0),
                             border: Border.all(
                               color: FlutterFlowTheme.of(context).alternate,
                               width: 1.0,
@@ -524,7 +524,7 @@ class _SettingsWidgetState extends State<SettingsWidget> {
                                   decoration: BoxDecoration(
                                     color: FlutterFlowTheme.of(context)
                                         .primaryBackground,
-                                    borderRadius: BorderRadius.circular(16.0),
+                                    borderRadius: BorderRadius.circular(8.0),
                                   ),
                                   alignment: AlignmentDirectional(0.0, 0.0),
                                   child: Icon(
@@ -643,7 +643,7 @@ class _SettingsWidgetState extends State<SettingsWidget> {
                           decoration: BoxDecoration(
                             color: FlutterFlowTheme.of(context)
                                 .secondaryBackground,
-                            borderRadius: BorderRadius.circular(24.0),
+                            borderRadius: BorderRadius.circular(8.0),
                             border: Border.all(
                               color: FlutterFlowTheme.of(context).alternate,
                               width: 1.0,
@@ -662,7 +662,7 @@ class _SettingsWidgetState extends State<SettingsWidget> {
                                   decoration: BoxDecoration(
                                     color: FlutterFlowTheme.of(context)
                                         .primaryBackground,
-                                    borderRadius: BorderRadius.circular(16.0),
+                                    borderRadius: BorderRadius.circular(8.0),
                                   ),
                                   alignment: AlignmentDirectional(0.0, 0.0),
                                   child: Icon(
@@ -752,7 +752,7 @@ class _SettingsWidgetState extends State<SettingsWidget> {
                           decoration: BoxDecoration(
                             color: FlutterFlowTheme.of(context)
                                 .secondaryBackground,
-                            borderRadius: BorderRadius.circular(24.0),
+                            borderRadius: BorderRadius.circular(8.0),
                             border: Border.all(
                               color: FlutterFlowTheme.of(context).alternate,
                               width: 1.0,
@@ -771,7 +771,7 @@ class _SettingsWidgetState extends State<SettingsWidget> {
                                   decoration: BoxDecoration(
                                     color: FlutterFlowTheme.of(context)
                                         .primaryBackground,
-                                    borderRadius: BorderRadius.circular(16.0),
+                                    borderRadius: BorderRadius.circular(8.0),
                                   ),
                                   alignment: AlignmentDirectional(0.0, 0.0),
                                   child: Icon(
@@ -859,7 +859,7 @@ class _SettingsWidgetState extends State<SettingsWidget> {
                           decoration: BoxDecoration(
                             color: FlutterFlowTheme.of(context)
                                 .secondaryBackground,
-                            borderRadius: BorderRadius.circular(24.0),
+                            borderRadius: BorderRadius.circular(8.0),
                             border: Border.all(
                               color: FlutterFlowTheme.of(context).alternate,
                               width: 1.0,
@@ -878,7 +878,7 @@ class _SettingsWidgetState extends State<SettingsWidget> {
                                   decoration: BoxDecoration(
                                     color: FlutterFlowTheme.of(context)
                                         .primaryBackground,
-                                    borderRadius: BorderRadius.circular(16.0),
+                                    borderRadius: BorderRadius.circular(8.0),
                                   ),
                                   alignment: AlignmentDirectional(0.0, 0.0),
                                   child: Icon(
@@ -972,7 +972,7 @@ class _SettingsWidgetState extends State<SettingsWidget> {
                             color: FlutterFlowTheme.of(context).primary,
                             width: 1.0,
                           ),
-                          borderRadius: BorderRadius.circular(24.0),
+                          borderRadius: BorderRadius.circular(8.0),
                         ),
                       ),
                     ),

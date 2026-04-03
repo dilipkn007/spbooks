@@ -61,7 +61,7 @@ class _DeepSearchResultWidgetState extends State<DeepSearchResultWidget> {
       child: Container(
         decoration: BoxDecoration(
           color: FlutterFlowTheme.of(context).secondaryBackground,
-          borderRadius: BorderRadius.circular(24.0),
+          borderRadius: BorderRadius.circular(8.0),
           border: Border.all(
             color: FlutterFlowTheme.of(context).alternate,
             width: 1.0,
@@ -88,14 +88,21 @@ class _DeepSearchResultWidgetState extends State<DeepSearchResultWidget> {
                         color: FlutterFlowTheme.of(context).primaryBackground,
                         borderRadius: BorderRadius.circular(8.0),
                       ),
-                      child: CachedNetworkImage(
-                        fadeInDuration: Duration(milliseconds: 0),
-                        fadeOutDuration: Duration(milliseconds: 0),
-                        imageUrl: widget.image!.trim(),
-                        width: double.infinity,
-                        height: double.infinity,
-                        fit: BoxFit.cover,
-                      ),
+                      child: (widget.image?.startsWith('assets/') ?? false)
+                          ? Image.asset(
+                              widget.image!,
+                              width: double.infinity,
+                              height: double.infinity,
+                              fit: BoxFit.fill,
+                            )
+                          : CachedNetworkImage(
+                              fadeInDuration: Duration(milliseconds: 0),
+                              fadeOutDuration: Duration(milliseconds: 0),
+                              imageUrl: widget.image!.trim(),
+                              width: double.infinity,
+                              height: double.infinity,
+                              fit: BoxFit.fill,
+                            ),
                     ),
                   ),
                   Expanded(
@@ -166,7 +173,7 @@ class _DeepSearchResultWidgetState extends State<DeepSearchResultWidget> {
               Container(
                 decoration: BoxDecoration(
                   color: FlutterFlowTheme.of(context).secondaryBackground,
-                  borderRadius: BorderRadius.circular(16.0),
+                  borderRadius: BorderRadius.circular(8.0),
                 ),
                 child: Padding(
                   padding: EdgeInsets.all(16.0),

@@ -78,7 +78,7 @@ class _BookCard2WidgetState extends State<BookCard2Widget> {
     return Container(
       decoration: BoxDecoration(
         color: FlutterFlowTheme.of(context).secondaryBackground,
-        borderRadius: BorderRadius.circular(24.0),
+        borderRadius: BorderRadius.circular(8.0),
         border: Border.all(
           color: FlutterFlowTheme.of(context).alternate,
         ),
@@ -91,7 +91,7 @@ class _BookCard2WidgetState extends State<BookCard2Widget> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             ClipRRect(
-              borderRadius: BorderRadius.circular(16.0),
+              borderRadius: BorderRadius.circular(8.0),
               child: Container(
                 width: 80.0,
                 height: 120.0,
@@ -107,19 +107,26 @@ class _BookCard2WidgetState extends State<BookCard2Widget> {
                       spreadRadius: 0.0,
                     )
                   ],
-                  borderRadius: BorderRadius.circular(16.0),
+                  borderRadius: BorderRadius.circular(8.0),
                 ),
-                child: CachedNetworkImage(
-                  fadeInDuration: Duration(milliseconds: 0),
-                  fadeOutDuration: Duration(milliseconds: 0),
-                  imageUrl: valueOrDefault<String>(
-                    widget.img?.trim(),
-                    'https://dimg.dreamflow.cloud/v1/image/book cover psychological thriller',
-                  ),
-                  width: double.infinity,
-                  height: double.infinity,
-                  fit: BoxFit.fill,
-                ),
+                child: (widget.img?.startsWith('assets/') ?? false)
+                    ? Image.asset(
+                        widget.img!,
+                        width: double.infinity,
+                        height: double.infinity,
+                        fit: BoxFit.fill,
+                      )
+                    : CachedNetworkImage(
+                        fadeInDuration: Duration(milliseconds: 0),
+                        fadeOutDuration: Duration(milliseconds: 0),
+                        imageUrl: valueOrDefault<String>(
+                          widget.img?.trim(),
+                          'https://dimg.dreamflow.cloud/v1/image/book cover psychological thriller',
+                        ),
+                        width: double.infinity,
+                        height: double.infinity,
+                        fit: BoxFit.fill,
+                      ),
               ),
             ),
             Expanded(

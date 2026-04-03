@@ -23,6 +23,7 @@ class ReaderViewWidget extends StatefulWidget {
     this.title,
     required this.bookId,
     int? parentId,
+    this.searchKeyword,
   }) : this.parentId = parentId ?? 0;
 
   final int? chapterNumber;
@@ -30,6 +31,7 @@ class ReaderViewWidget extends StatefulWidget {
   final String? title;
   final int? bookId;
   final int parentId;
+  final String? searchKeyword;
 
   static String routeName = 'ReaderView';
   static String routePath = '/readerView';
@@ -45,6 +47,9 @@ class _ReaderViewWidgetState extends State<ReaderViewWidget>
   Set<int> bookmarkedChapterIds = {};
   double _currentScrollFraction = 0.0;
   double _lastSavedScrollFraction = 0.0;
+  bool _hasScrolledToMatch = false;
+  List<GlobalKey> _matchKeys = [];
+  int _currentMatchIndex = 0;
 
   final scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -120,6 +125,153 @@ class _ReaderViewWidgetState extends State<ReaderViewWidget>
     super.dispose();
   }
 
+  /// Scrolls to the match at the specified index.
+  void _scrollToMatch(int index) {
+    if (index >= 0 && index < _matchKeys.length) {
+      safeSetState(() => _currentMatchIndex = index);
+      final key = _matchKeys[index];
+      if (key.currentContext != null) {
+        Scrollable.ensureVisible(
+          key.currentContext!,
+          duration: Duration(milliseconds: 600),
+          curve: Curves.easeInOut,
+          alignment: 0.3,
+        );
+      }
+    }
+  }
+
+  /// Builds the chapter title with search keyword highlighted.
+  Widget _buildTitle(BuildContext context, String content) {
+    final keyword = widget.searchKeyword;
+    final baseStyle = FlutterFlowTheme.of(context).displaySmall.override(
+          font: GoogleFonts.interTight(
+            fontWeight: FlutterFlowTheme.of(context).displaySmall.fontWeight,
+            fontStyle: FlutterFlowTheme.of(context).displaySmall.fontStyle,
+          ),
+          letterSpacing: 0.0,
+          fontWeight: FlutterFlowTheme.of(context).displaySmall.fontWeight,
+          fontStyle: FlutterFlowTheme.of(context).displaySmall.fontStyle,
+        );
+
+    if (keyword == null || keyword.isEmpty) {
+      return Text(content, style: baseStyle);
+    }
+
+    final lowerContent = content.toLowerCase();
+    final lowerKeyword = keyword.toLowerCase();
+    final spans = <InlineSpan>[];
+    int start = 0;
+
+    while (true) {
+      final idx = lowerContent.indexOf(lowerKeyword, start);
+      if (idx == -1) {
+        spans.add(TextSpan(text: content.substring(start)));
+        break;
+      }
+      if (idx > start) {
+        spans.add(TextSpan(text: content.substring(start, idx)));
+      }
+
+      final key = GlobalKey();
+      _matchKeys.add(key);
+      spans.add(WidgetSpan(
+        alignment: PlaceholderAlignment.middle,
+        child: KeyedSubtree(
+          key: key,
+          child: Text(
+            content.substring(idx, idx + keyword.length),
+            style: TextStyle(
+              backgroundColor: FlutterFlowTheme.of(context).tertiary,
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+              fontSize: baseStyle.fontSize,
+            ),
+          ),
+        ),
+      ));
+      start = idx + keyword.length;
+    }
+
+    return RichText(
+      text: TextSpan(style: baseStyle, children: spans),
+    );
+  }
+
+  /// Builds the chapter content with search keyword highlighted.
+  Widget _buildContent(BuildContext context, String content, bool isCurrentPage) {
+    final keyword = widget.searchKeyword;
+    final baseStyle = FlutterFlowTheme.of(context).labelMedium.override(
+          font: GoogleFonts.inter(
+            fontWeight: FlutterFlowTheme.of(context).labelMedium.fontWeight,
+            fontStyle: FlutterFlowTheme.of(context).labelMedium.fontStyle,
+          ),
+          letterSpacing: 0.0,
+          fontWeight: FlutterFlowTheme.of(context).labelMedium.fontWeight,
+          fontStyle: FlutterFlowTheme.of(context).labelMedium.fontStyle,
+        );
+
+    if (keyword == null || keyword.isEmpty) {
+      return Text(content, style: baseStyle);
+    }
+
+    final lowerContent = content.toLowerCase();
+    final lowerKeyword = keyword.toLowerCase();
+    final spans = <InlineSpan>[];
+    int start = 0;
+
+    while (true) {
+      final idx = lowerContent.indexOf(lowerKeyword, start);
+      if (idx == -1) {
+        spans.add(TextSpan(text: content.substring(start)));
+        break;
+      }
+      if (idx > start) {
+        spans.add(TextSpan(text: content.substring(start, idx)));
+      }
+
+      final key = GlobalKey();
+      _matchKeys.add(key);
+      spans.add(WidgetSpan(
+        alignment: PlaceholderAlignment.middle,
+        child: KeyedSubtree(
+          key: key,
+          child: Container(
+            color: FlutterFlowTheme.of(context).tertiary,
+            child: Text(
+              content.substring(idx, idx + keyword.length),
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: baseStyle.fontSize,
+              ),
+            ),
+          ),
+        ),
+      ));
+      
+      start = idx + keyword.length;
+    }
+
+    if (isCurrentPage && _matchKeys.isNotEmpty && !_hasScrolledToMatch) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted && _matchKeys.isNotEmpty && _matchKeys[0].currentContext != null) {
+          _hasScrolledToMatch = true;
+          Scrollable.ensureVisible(
+            _matchKeys[0].currentContext!,
+            duration: Duration(milliseconds: 600),
+            curve: Curves.easeInOut,
+            alignment: 0.3,
+          );
+        }
+      });
+    }
+
+    return RichText(
+      text: TextSpan(style: baseStyle, children: spans),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     if (chapters == null) {
@@ -145,600 +297,290 @@ class _ReaderViewWidgetState extends State<ReaderViewWidget>
     return Scaffold(
       key: scaffoldKey,
       backgroundColor: FlutterFlowTheme.of(context).primaryBackground,
-      floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          _model.utilityFlag = !_model.utilityFlag;
-          safeSetState(() {});
-        },
-        backgroundColor: FlutterFlowTheme.of(context).primary,
-        elevation: 8.0,
-        child: Icon(
-          Icons.add_rounded,
-          color: FlutterFlowTheme.of(context).info,
-          size: 24.0,
-        ),
+      floatingActionButton: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          if (widget.searchKeyword != null && _matchKeys.isNotEmpty)
+            Padding(
+              padding: EdgeInsets.only(bottom: 16.0),
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
+                decoration: BoxDecoration(
+                  color: FlutterFlowTheme.of(context).primaryBackground,
+                  borderRadius: BorderRadius.circular(8.0),
+                  boxShadow: [
+                    BoxShadow(
+                      blurRadius: 4.0,
+                      color: Color(0x33000000),
+                      offset: Offset(0.0, 2.0),
+                    )
+                  ],
+                  border: Border.all(
+                    color: FlutterFlowTheme.of(context).alternate,
+                    width: 1.0,
+                  ),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    IconButton(
+                      icon: Icon(Icons.keyboard_arrow_up_rounded),
+                      onPressed: _currentMatchIndex > 0
+                          ? () => _scrollToMatch(_currentMatchIndex - 1)
+                          : null,
+                      color: FlutterFlowTheme.of(context).primaryText,
+                    ),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 8.0),
+                      child: Text(
+                        '${_currentMatchIndex + 1} of ${_matchKeys.length}',
+                        style: FlutterFlowTheme.of(context).labelMedium,
+                      ),
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.keyboard_arrow_down_rounded),
+                      onPressed: _currentMatchIndex < _matchKeys.length - 1
+                          ? () => _scrollToMatch(_currentMatchIndex + 1)
+                          : null,
+                      color: FlutterFlowTheme.of(context).primaryText,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          FloatingActionButton(
+            onPressed: () async {
+              _model.utilityFlag = !_model.utilityFlag;
+              safeSetState(() {});
+            },
+            backgroundColor: FlutterFlowTheme.of(context).primary,
+            elevation: 8.0,
+            child: Icon(
+              Icons.add_rounded,
+              color: FlutterFlowTheme.of(context).info,
+              size: 24.0,
+            ),
+          ),
+        ],
       ),
       body: SafeArea(
         top: true,
-        child: Column(
-          mainAxisSize: MainAxisSize.max,
+        child: Stack(
           children: [
             Column(
               mainAxisSize: MainAxisSize.max,
               children: [
-                Stack(
-                  children: [
-                    Container(
-                      height: (MediaQuery.sizeOf(context).height * 0.90),
-                      decoration: BoxDecoration(),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.max,
-                        children: [
-                          Expanded(
-                                child: Container(
-                                  width: double.infinity,
-                                  height: 500.0,
-                                  child: Stack(
-                                    children: [
-                                      Padding(
-                                        padding: EdgeInsetsDirectional.fromSTEB(
-                                            0.0, 0.0, 0.0, 40.0),
-                                        child: PageView.builder(
-                                          controller: _model
-                                                  .pageViewController ??=
-                                              PageController(
-                                                  initialPage: max(
-                                                      0,
-                                                      min(
-                                                          valueOrDefault<int>(
-                                                            (widget.chapterNumber!) -
-                                                                1,
-                                                            0,
-                                                          ),
-                                                          pageViewFetchChaptersContentRowList
-                                                                  .length -
-                                                              1))),
-                                          onPageChanged: (_) async {
-                                            _currentScrollFraction = 0.0;
-                                            _lastSavedScrollFraction = 0.0;
-                                            safeSetState(() {});
+                Expanded(
+                  child: Stack(
+                    children: [
+                      Padding(
+                        padding: EdgeInsetsDirectional.fromSTEB(0.0, 70.0, 0.0, 100.0),
+                        child: PageView.builder(
+                          controller: _model.pageViewController ??= PageController(
+                            initialPage: max(0, min(valueOrDefault<int>((widget.chapterNumber!) - 1, 0), pageViewFetchChaptersContentRowList.length - 1)),
+                          ),
+                          onPageChanged: (_) async {
+                            _currentScrollFraction = 0.0;
+                            _lastSavedScrollFraction = 0.0;
+                            _hasScrolledToMatch = false;
+                            safeSetState(() {});
+                            SQLiteManager.instance.updateReadingHistory(
+                              bookId: widget.bookId!,
+                              chapterId: pageViewFetchChaptersContentRowList[_model.pageViewController?.page?.round() ?? 0].id,
+                              percent: (((_model.pageViewController?.page?.round() ?? 0) + _currentScrollFraction) / pageViewFetchChaptersContentRowList.length),
+                            );
+                          },
+                          itemCount: pageViewFetchChaptersContentRowList.length,
+                          itemBuilder: (context, pageViewIndex) {
+                            final row = pageViewFetchChaptersContentRowList[pageViewIndex];
+                            if (pageViewIndex == currentIndex) {
+                              _matchKeys.clear();
+                            }
+                            return Column(
+                              mainAxisSize: MainAxisSize.max,
+                              children: [
+                                Expanded(
+                                  child: NotificationListener<ScrollNotification>(
+                                    onNotification: (scrollInfo) {
+                                      if (scrollInfo.metrics.axis == Axis.vertical && scrollInfo.metrics.maxScrollExtent > 0) {
+                                        final fraction = scrollInfo.metrics.pixels / scrollInfo.metrics.maxScrollExtent;
+                                        final clampedFraction = fraction.clamp(0.0, 1.0);
+                                        if ((clampedFraction - _currentScrollFraction).abs() > 0.01) {
+                                          safeSetState(() {
+                                            _currentScrollFraction = clampedFraction;
+                                          });
+                                          if ((clampedFraction - _lastSavedScrollFraction).abs() > 0.05) {
+                                            _lastSavedScrollFraction = clampedFraction;
                                             SQLiteManager.instance.updateReadingHistory(
                                               bookId: widget.bookId!,
                                               chapterId: pageViewFetchChaptersContentRowList[_model.pageViewController?.page?.round() ?? 0].id,
-                                              percent: (((_model.pageViewController?.page?.round() ?? 0) + _currentScrollFraction) / pageViewFetchChaptersContentRowList.length),
+                                              percent: (((_model.pageViewController?.page?.round() ?? 0) + clampedFraction) / pageViewFetchChaptersContentRowList.length),
                                             );
-                                          },
-                                          scrollDirection: Axis.horizontal,
-                                          itemCount:
-                                              pageViewFetchChaptersContentRowList
-                                                  .length,
-                                          itemBuilder:
-                                              (context, pageViewIndex) {
-                                            final pageViewFetchChaptersContentRow =
-                                                pageViewFetchChaptersContentRowList[
-                                                    pageViewIndex];
-                                            return Column(
-                                              mainAxisSize: MainAxisSize.max,
-                                              children: [
-                                                Expanded(
-                                                  child: NotificationListener<ScrollNotification>(
-                                                    onNotification: (ScrollNotification scrollInfo) {
-                                                      if (scrollInfo.metrics.axis == Axis.vertical && scrollInfo.metrics.maxScrollExtent > 0) {
-                                                        final fraction = scrollInfo.metrics.pixels / scrollInfo.metrics.maxScrollExtent;
-                                                        final clampedFraction = fraction.clamp(0.0, 1.0);
-                                                        if ((clampedFraction - _currentScrollFraction).abs() > 0.01) {
-                                                          safeSetState(() {
-                                                            _currentScrollFraction = clampedFraction;
-                                                          });
-                                                          if ((clampedFraction - _lastSavedScrollFraction).abs() > 0.05) {
-                                                            _lastSavedScrollFraction = clampedFraction;
-                                                            SQLiteManager.instance.updateReadingHistory(
-                                                              bookId: widget.bookId!,
-                                                              chapterId: pageViewFetchChaptersContentRowList[_model.pageViewController?.page?.round() ?? 0].id,
-                                                              percent: (((_model.pageViewController?.page?.round() ?? 0) + clampedFraction) / pageViewFetchChaptersContentRowList.length),
-                                                            );
-                                                          }
-                                                        }
-                                                      }
-                                                      return false;
-                                                    },
-                                                    child: SingleChildScrollView(
-                                                      child: Column(
-                                                        mainAxisSize:
-                                                            MainAxisSize.max,
-                                                        children: [
-                                                        Padding(
-                                                          padding:
-                                                              EdgeInsetsDirectional
-                                                                  .fromSTEB(
-                                                                      0.0,
-                                                                      64.0,
-                                                                      0.0,
-                                                                      0.0),
-                                                          child: Row(
-                                                            mainAxisSize:
-                                                                MainAxisSize
-                                                                    .max,
-                                                            children: [
-                                                              Expanded(
-                                                                child: Align(
-                                                                  alignment:
-                                                                      AlignmentDirectional(
-                                                                          -1.0,
-                                                                          0.0),
-                                                                  child:
-                                                                      Padding(
-                                                                    padding: EdgeInsetsDirectional
-                                                                        .fromSTEB(
-                                                                            24.0,
-                                                                            2.0,
-                                                                            24.0,
-                                                                            0.0),
-                                                                    child: Text(
-                                                                      '${pageViewFetchChaptersContentRow.number.toString()}. ${pageViewFetchChaptersContentRow.title}',
-                                                                      maxLines:
-                                                                          3,
-                                                                      style: FlutterFlowTheme.of(
-                                                                              context)
-                                                                          .displaySmall
-                                                                          .override(
-                                                                            font:
-                                                                                GoogleFonts.interTight(
-                                                                              fontWeight: FlutterFlowTheme.of(context).displaySmall.fontWeight,
-                                                                              fontStyle: FlutterFlowTheme.of(context).displaySmall.fontStyle,
-                                                                            ),
-                                                                            letterSpacing:
-                                                                                0.0,
-                                                                            fontWeight:
-                                                                                FlutterFlowTheme.of(context).displaySmall.fontWeight,
-                                                                            fontStyle:
-                                                                                FlutterFlowTheme.of(context).displaySmall.fontStyle,
-                                                                          ),
-                                                                    ),
-                                                                  ),
-                                                                ),
-                                                              ),
-                                                            ],
-                                                          ),
-                                                        ),
-                                                        Align(
-                                                          alignment:
-                                                              AlignmentDirectional(
-                                                                  -1.0, 0.0),
-                                                          child: Padding(
-                                                            padding:
-                                                                EdgeInsetsDirectional
-                                                                    .fromSTEB(
-                                                                        24.0,
-                                                                        24.0,
-                                                                        24.0,
-                                                                        10.0),
-                                                            child:
-                                                                SelectionArea(
-                                                                    child: Text(
-                                                              pageViewFetchChaptersContentRow
-                                                                  .content,
-                                                              style: FlutterFlowTheme
-                                                                      .of(context)
-                                                                  .labelMedium
-                                                                  .override(
-                                                                    font: GoogleFonts
-                                                                        .inter(
-                                                                      fontWeight: FlutterFlowTheme.of(
-                                                                              context)
-                                                                          .labelMedium
-                                                                          .fontWeight,
-                                                                      fontStyle: FlutterFlowTheme.of(
-                                                                              context)
-                                                                          .labelMedium
-                                                                          .fontStyle,
-                                                                    ),
-                                                                    letterSpacing:
-                                                                        0.0,
-                                                                    fontWeight: FlutterFlowTheme.of(
-                                                                            context)
-                                                                        .labelMedium
-                                                                        .fontWeight,
-                                                                    fontStyle: FlutterFlowTheme.of(
-                                                                            context)
-                                                                        .labelMedium
-                                                                        .fontStyle,
-                                                                  ),
-                                                            )).animateOnPageLoad(
-                                                                    animationsMap[
-                                                                        'textOnPageLoadAnimation']!),
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                              ],
-                                            );
-                                          },
-                                        ),
-                                      ),
-                                      Align(
-                                        alignment:
-                                            AlignmentDirectional(0.0, 1.0),
-                                        child: Padding(
-                                          padding:
-                                              EdgeInsetsDirectional.fromSTEB(
-                                                  0.0, 0.0, 0.0, 16.0),
-                                          child: smooth_page_indicator
-                                              .SmoothPageIndicator(
-                                            controller: _model
-                                                    .pageViewController ??=
-                                                PageController(
-                                                    initialPage: max(
-                                                        0,
-                                                        min(
-                                                            valueOrDefault<int>(
-                                                              (widget.chapterNumber!) -
-                                                                  1,
-                                                              0,
-                                                            ),
-                                                            pageViewFetchChaptersContentRowList
-                                                                    .length -
-                                                                1))),
-                                            count:
-                                                pageViewFetchChaptersContentRowList
-                                                    .length,
-                                            axisDirection: Axis.horizontal,
-                                            onDotClicked: (i) async {
-                                              await _model.pageViewController!
-                                                  .animateToPage(
-                                                i,
-                                                duration:
-                                                    Duration(milliseconds: 500),
-                                                curve: Curves.ease,
-                                              );
-                                              safeSetState(() {});
-                                            },
-                                            effect: smooth_page_indicator
-                                                .SlideEffect(
-                                              spacing: 8.0,
-                                              radius: 8.0,
-                                              dotWidth: 8.0,
-                                              dotHeight: 8.0,
-                                              dotColor:
-                                                  FlutterFlowTheme.of(context)
-                                                      .accent1,
-                                              activeDotColor:
-                                                  FlutterFlowTheme.of(context)
-                                                      .primary,
-                                              paintStyle: PaintingStyle.fill,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Container(
-                      height: 80.0,
-                      decoration: BoxDecoration(),
-                      child: wrapWithModel(
-                        model: _model.custAppBarModel,
-                        updateCallback: () => safeSetState(() {}),
-                        child: CustAppBarWidget(
-                          isBookmarked: isBookmarked,
-                          onBookmarkTap: () => toggleBookmark(currentChapterId),
-                        ),
-                      ),
-                    ),
-                    Container(
-                      decoration: BoxDecoration(
-                        color: Color(0x00FEFEFF),
-                      ),
-                      child: Padding(
-                        padding: EdgeInsetsDirectional.fromSTEB(
-                            24.0, 0.0, 24.0, 24.0),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Column(
-                              mainAxisSize: MainAxisSize.min,
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
-                              children: [
-                                Row(
-                                  mainAxisSize: MainAxisSize.max,
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    Text(
-                                      '${(((currentIndex + _currentScrollFraction) / pageViewFetchChaptersContentRowList.length) * 100).toInt()}% read',
-                                      style: FlutterFlowTheme.of(context)
-                                          .labelSmall
-                                          .override(
-                                            font: GoogleFonts.roboto(
-                                              fontWeight: FontWeight.w500,
-                                              fontStyle:
-                                                  FlutterFlowTheme.of(context)
-                                                      .labelSmall
-                                                      .fontStyle,
-                                            ),
-                                            color: FlutterFlowTheme.of(context)
-                                                .secondaryText,
-                                            fontSize: 11.0,
-                                            letterSpacing: 0.0,
-                                            fontWeight: FontWeight.w500,
-                                            lineHeight: 1.45,
-                                          ),
-                                    ),
-                                    Text(
-                                      '${currentIndex + 1} of ${pageViewFetchChaptersContentRowList.length}',
-                                      style: FlutterFlowTheme.of(context)
-                                          .labelSmall
-                                          .override(
-                                            font: GoogleFonts.roboto(
-                                              fontWeight: FontWeight.w500,
-                                              fontStyle:
-                                                  FlutterFlowTheme.of(context)
-                                                      .labelSmall
-                                                      .fontStyle,
-                                            ),
-                                            color: FlutterFlowTheme.of(context)
-                                                .secondaryText,
-                                            fontSize: 11.0,
-                                            letterSpacing: 0.0,
-                                            fontWeight: FontWeight.w500,
-                                            lineHeight: 1.45,
-                                          ),
-                                    ),
-                                  ],
-                                ),
-                                LinearPercentIndicator(
-                                  percent: ((currentIndex + _currentScrollFraction) / pageViewFetchChaptersContentRowList.length).clamp(0.0, 1.0),
-                                  lineHeight: 2.0,
-                                  animation: false,
-                                  animateFromLastPercent: true,
-                                  progressColor: Color(0xFFEE8B60),
-                                  backgroundColor:
-                                      FlutterFlowTheme.of(context).alternate,
-                                  barRadius: Radius.circular(1.0),
-                                  padding: EdgeInsets.zero,
-                                ),
-                              ].divide(SizedBox(height: 4.0)),
-                            ),
-                            if (!_model.utilityFlag)
-                              Container(
-                                decoration: BoxDecoration(
-                                  color: Color(0xFFFEFEFF),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      blurRadius: 2.0,
-                                      color: Color(0x1A000000),
-                                      offset: Offset(
-                                        0.0,
-                                        1.0,
-                                      ),
-                                      spreadRadius: 0.0,
-                                    )
-                                  ],
-                                  borderRadius: BorderRadius.circular(32.0),
-                                  border: Border.all(
-                                    color: Color(0xFFE0E0E8),
-                                    width: 1.0,
-                                  ),
-                                ),
-                                child: Padding(
-                                  padding: EdgeInsets.all(16.0),
-                                  child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: [
-                                      SingleChildScrollView(
-                                        scrollDirection: Axis.horizontal,
-                                        child: Row(
-                                          mainAxisSize: MainAxisSize.max,
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.start,
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.center,
-                                          children: [
-                                            wrapWithModel(
-                                              model: _model.controlChipModel1,
-                                              updateCallback: () =>
-                                                  safeSetState(() {}),
-                                              child: ControlChipWidget(
-                                                selected: true,
-                                                label: 'Serif',
-                                              ),
-                                            ),
-                                            wrapWithModel(
-                                              model: _model.controlChipModel2,
-                                              updateCallback: () =>
-                                                  safeSetState(() {}),
-                                              child: ControlChipWidget(
-                                                selected: false,
-                                                label: 'Sans',
-                                              ),
-                                            ),
-                                            wrapWithModel(
-                                              model: _model.controlChipModel3,
-                                              updateCallback: () =>
-                                                  safeSetState(() {}),
-                                              child: ControlChipWidget(
-                                                selected: false,
-                                                label: 'Mono',
-                                              ),
-                                            ),
-                                            wrapWithModel(
-                                              model: _model.controlChipModel4,
-                                              updateCallback: () =>
-                                                  safeSetState(() {}),
-                                              child: ControlChipWidget(
-                                                selected: false,
-                                                label: 'Classic',
-                                              ),
-                                            ),
-                                          ].divide(SizedBox(width: 8.0)),
-                                        ),
-                                      ),
-                                      Divider(
-                                        thickness: 0.5,
-                                        color: FlutterFlowTheme.of(context)
-                                            .alternate,
-                                      ),
-                                      Row(
+                                          }
+                                        }
+                                      }
+                                      return false;
+                                    },
+                                    child: SingleChildScrollView(
+                                      child: Column(
                                         mainAxisSize: MainAxisSize.max,
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
                                         children: [
-                                          Row(
-                                            mainAxisSize: MainAxisSize.max,
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.start,
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.center,
-                                            children: [
-                                              wrapWithModel(
-                                                model:
-                                                    _model.fontSizeButtonModel1,
-                                                updateCallback: () =>
-                                                    safeSetState(() {}),
-                                                child: FontSizeButtonWidget(
-                                                  icon: 'text_fields_rounded',
-                                                  size: 16.0,
-                                                ),
-                                              ),
-                                              wrapWithModel(
-                                                model:
-                                                    _model.fontSizeButtonModel2,
-                                                updateCallback: () =>
-                                                    safeSetState(() {}),
-                                                child: FontSizeButtonWidget(
-                                                  icon: 'text_fields_rounded',
-                                                  size: 24.0,
-                                                ),
-                                              ),
-                                            ].divide(SizedBox(width: 8.0)),
+                                          Padding(
+                                            padding: EdgeInsetsDirectional.fromSTEB(24.0, 24.0, 24.0, 0.0),
+                                            child: _buildTitle(context, '${row.number}. ${row.title}'),
                                           ),
-                                          Container(
-                                            child: Padding(
-                                              padding: EdgeInsets.all(4.0),
-                                              child: Row(
-                                                mainAxisSize: MainAxisSize.max,
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.start,
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.center,
-                                                children: [
-                                                  Container(
-                                                    width: 32.0,
-                                                    height: 32.0,
-                                                    decoration: BoxDecoration(
-                                                      color: Colors.white,
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              9999.0),
-                                                      border: Border.all(
-                                                        color:
-                                                            FlutterFlowTheme.of(
-                                                                    context)
-                                                                .alternate,
-                                                        width: 1.0,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                  Container(
-                                                    width: 32.0,
-                                                    height: 32.0,
-                                                    decoration: BoxDecoration(
-                                                      color: Color(0xFFF5E6D3),
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              9999.0),
-                                                      border: Border.all(
-                                                        color:
-                                                            FlutterFlowTheme.of(
-                                                                    context)
-                                                                .alternate,
-                                                        width: 1.0,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                  Container(
-                                                    width: 32.0,
-                                                    height: 32.0,
-                                                    decoration: BoxDecoration(
-                                                      color: Color(0xFF1A1A1A),
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              9999.0),
-                                                      border: Border.all(
-                                                        color:
-                                                            Color(0xFF333333),
-                                                        width: 1.0,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ].divide(SizedBox(width: 4.0)),
-                                              ),
+                                          Padding(
+                                            padding: EdgeInsetsDirectional.fromSTEB(24.0, 24.0, 24.0, 10.0),
+                                            child: SelectionArea(
+                                              child: _buildContent(context, row.content, pageViewIndex == currentIndex),
                                             ),
                                           ),
                                         ],
                                       ),
-                                    ].divide(SizedBox(height: 16.0)),
+                                    ).animateOnPageLoad(animationsMap['textOnPageLoadAnimation']!),
                                   ),
                                 ),
-                              ),
-                            if (!_model.utilityFlag)
-                              FFButtonWidget(
-                                onPressed: () {
-                                  print('Button pressed ...');
-                                },
-                                text: 'Power Search in Chapter',
-                                icon: Icon(
-                                  Icons.search_rounded,
-                                  size: 15.0,
-                                ),
-                                options: FFButtonOptions(
-                                  width: double.infinity,
-                                  height: 44.0,
-                                  padding: EdgeInsetsDirectional.fromSTEB(
-                                      0.0, 0.0, 0.0, 0.0),
-                                  iconPadding: EdgeInsetsDirectional.fromSTEB(
-                                      0.0, 0.0, 0.0, 0.0),
-                                  iconColor:
-                                      FlutterFlowTheme.of(context).primaryText,
-                                  color: FlutterFlowTheme.of(context)
-                                      .secondaryBackground,
-                                  textStyle: GoogleFonts.roboto(
-                                    color: FlutterFlowTheme.of(context)
-                                        .primaryText,
-                                    fontWeight: FontWeight.w600,
-                                    fontSize: 14.0,
-                                  ),
-                                  elevation: 0.0,
-                                  borderSide: BorderSide(
-                                    color: Color(0xFFE0E0E8),
-                                    width: 1.0,
-                                  ),
-                                  borderRadius: BorderRadius.circular(24.0),
-                                ),
-                              ),
-                          ].divide(SizedBox(height: 16.0)),
+                              ],
+                            );
+                          },
                         ),
                       ),
-                    ),
-                  ],
+                      Align(
+                        alignment: AlignmentDirectional(0.0, 1.0),
+                        child: Padding(
+                          padding: EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 0.0, 10.0),
+                          child: smooth_page_indicator.SmoothPageIndicator(
+                            controller: _model.pageViewController!,
+                            count: pageViewFetchChaptersContentRowList.length,
+                            effect: smooth_page_indicator.SlideEffect(
+                              spacing: 8.0,
+                              radius: 8.0,
+                              dotWidth: 8.0,
+                              dotHeight: 8.0,
+                              dotColor: FlutterFlowTheme.of(context).accent1,
+                              activeDotColor: FlutterFlowTheme.of(context).primary,
+                              paintStyle: PaintingStyle.fill,
+                            ),
+                          ),
+                        ),
+                      ),
+                      if (!_model.utilityFlag)
+                        Align(
+                          alignment: AlignmentDirectional(0.0, 1.0),
+                          child: Padding(
+                            padding: EdgeInsetsDirectional.fromSTEB(24.0, 0.0, 24.0, 24.0),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Container(
+                                  decoration: BoxDecoration(
+                                    color: Color(0xFFFEFEFF),
+                                    borderRadius: BorderRadius.circular(12.0),
+                                    border: Border.all(color: Color(0xFFE0E0E8)),
+                                  ),
+                                  padding: EdgeInsets.all(16.0),
+                                  child: Column(
+                                    children: [
+                                      SingleChildScrollView(
+                                        scrollDirection: Axis.horizontal,
+                                        child: Row(
+                                          children: [
+                                            ControlChipWidget(selected: true, label: 'Serif'),
+                                            ControlChipWidget(selected: false, label: 'Sans'),
+                                            ControlChipWidget(selected: false, label: 'Mono'),
+                                            ControlChipWidget(selected: false, label: 'Classic'),
+                                          ].divide(SizedBox(width: 8.0)),
+                                        ),
+                                      ),
+                                      Divider(thickness: 0.5, color: FlutterFlowTheme.of(context).alternate),
+                                      Row(
+                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Row(
+                                            children: [
+                                              FontSizeButtonWidget(icon: 'text_fields_rounded', size: 16.0),
+                                              FontSizeButtonWidget(icon: 'text_fields_rounded', size: 24.0),
+                                            ].divide(SizedBox(width: 8.0)),
+                                          ),
+                                          Row(
+                                            children: [
+                                              Container(width: 32, height: 32, decoration: BoxDecoration(color: Colors.white, shape: BoxShape.circle, border: Border.all(color: FlutterFlowTheme.of(context).alternate))),
+                                              Container(width: 32, height: 32, decoration: BoxDecoration(color: Color(0xFFF5E6D3), shape: BoxShape.circle, border: Border.all(color: FlutterFlowTheme.of(context).alternate))),
+                                              Container(width: 32, height: 32, decoration: BoxDecoration(color: Color(0xFF1A1A1A), shape: BoxShape.circle, border: Border.all(color: Color(0xFF333333)))),
+                                            ].divide(SizedBox(width: 4.0)),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                SizedBox(height: 16.0),
+                                FFButtonWidget(
+                                  onPressed: () {},
+                                  text: 'Power Search in Chapter',
+                                  icon: Icon(Icons.search_rounded, size: 15.0),
+                                  options: FFButtonOptions(
+                                    width: double.infinity,
+                                    height: 44.0,
+                                    color: FlutterFlowTheme.of(context).secondaryBackground,
+                                    textStyle: FlutterFlowTheme.of(context).titleSmall,
+                                    borderSide: BorderSide(color: Color(0xFFE0E0E8)),
+                                    borderRadius: BorderRadius.circular(8.0),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ).animateOnPageLoad(animationsMap['textOnPageLoadAnimation']!),
+                        ),
+                    ],
+                  ),
                 ),
               ],
+            ),
+            Align(
+              alignment: AlignmentDirectional(0.0, -1.0),
+              child: Padding(
+                padding: EdgeInsets.only(top: 8.0),
+                child: Container(
+                  padding: EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text('${(((currentIndex + _currentScrollFraction) / pageViewFetchChaptersContentRowList.length) * 100).toInt()}% read', style: FlutterFlowTheme.of(context).labelSmall),
+                          Text('${currentIndex + 1} of ${pageViewFetchChaptersContentRowList.length}', style: FlutterFlowTheme.of(context).labelSmall),
+                        ],
+                      ),
+                      LinearPercentIndicator(
+                        percent: ((currentIndex + _currentScrollFraction) / pageViewFetchChaptersContentRowList.length).clamp(0.0, 1.0),
+                        lineHeight: 2.0,
+                        progressColor: Color(0xFFEE8B60),
+                        backgroundColor: FlutterFlowTheme.of(context).alternate,
+                        padding: EdgeInsets.zero,
+                      ),
+                    ].divide(SizedBox(height: 4.0)),
+                  ),
+                ),
+              ),
+            ),
+            Align(
+              alignment: AlignmentDirectional(0.0, -1.0),
+              child: Padding(
+                padding: EdgeInsets.only(top: 24.0), // Pulled up closer to progress bar
+                child: Container(
+                  height: 80.0,
+                  child: wrapWithModel(
+                    model: _model.custAppBarModel,
+                    updateCallback: () => safeSetState(() {}),
+                    child: CustAppBarWidget(
+                      isBookmarked: isBookmarked,
+                      onBookmarkTap: () => toggleBookmark(currentChapterId),
+                    ),
+                  ),
+                ),
+              ),
             ),
           ],
         ),

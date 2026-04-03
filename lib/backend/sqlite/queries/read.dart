@@ -133,7 +133,7 @@ class SearchContentRow extends SqliteRow {
   int? get number => data['number'] as int?;
   String? get title => data['title'] as String?;
   String? get content => data['content'] as String?;
-  int? get parent => data['parent'] as int?;
+  int? get parent => data['parent_id'] as int?;
   String? get bookCover => (data['book_cover'] as String?)?.trim();
 }
 

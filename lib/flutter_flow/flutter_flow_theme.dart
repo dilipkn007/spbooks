@@ -367,9 +367,9 @@ class FFSpacing {
 
 class FFRadius {
   const FFRadius();
-  double get sm => 8.0;
-  double get md => 16.0;
-  double get lg => 24.0;
+  double get sm => 6.0;
+  double get md => 8.0;
+  double get lg => 12.0;
   double get full => 9999.0;
 }
 

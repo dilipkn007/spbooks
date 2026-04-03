@@ -48,7 +48,7 @@ class _ControlChipWidgetState extends State<ControlChipWidget> {
         color: widget.selected!
             ? FlutterFlowTheme.of(context).primaryText
             : FlutterFlowTheme.of(context).secondaryBackground,
-        borderRadius: BorderRadius.circular(24.0),
+        borderRadius: BorderRadius.circular(8.0),
         border: Border.all(
           color: FlutterFlowTheme.of(context).alternate,
           width: 1.0,

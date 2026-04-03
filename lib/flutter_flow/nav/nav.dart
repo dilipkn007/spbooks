@@ -94,6 +94,10 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
               'parentId',
               ParamType.int,
             ),
+            searchKeyword: params.getParam(
+              'searchKeyword',
+              ParamType.String,
+            ),
           ),
         ),
         FFRoute(

@@ -48,7 +48,7 @@ class _CategoryChipWidgetState extends State<CategoryChipWidget> {
         color: widget.selected!
             ? FlutterFlowTheme.of(context).primary
             : FlutterFlowTheme.of(context).secondaryBackground,
-        borderRadius: BorderRadius.circular(24.0),
+        borderRadius: BorderRadius.circular(8.0),
         border: Border.all(
           color: widget.selected!
               ? FlutterFlowTheme.of(context).primary

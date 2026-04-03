@@ -147,7 +147,7 @@ class _BookmarksWidgetState extends State<BookmarksWidget> {
                   Container(
                     decoration: BoxDecoration(
                       color: FlutterFlowTheme.of(context).secondaryBackground,
-                      borderRadius: BorderRadius.circular(24.0),
+                      borderRadius: BorderRadius.circular(8.0),
                       border: Border.all(
                         color: FlutterFlowTheme.of(context).alternate,
                         width: 1.0,
@@ -193,7 +193,7 @@ class _BookmarksWidgetState extends State<BookmarksWidget> {
                   Container(
                     decoration: BoxDecoration(
                       color: Color(0xFFF0F0F0),
-                      borderRadius: BorderRadius.circular(24.0),
+                      borderRadius: BorderRadius.circular(8.0),
                     ),
                     child: Padding(
                       padding: EdgeInsets.all(4.0),

@@ -187,7 +187,7 @@ class _BooksLibraryWidgetState extends State<BooksLibraryWidget> {
                                     spreadRadius: 0.0,
                                   )
                                 ],
-                                borderRadius: BorderRadius.circular(32.0),
+                                borderRadius: BorderRadius.circular(12.0),
                                 border: Border.all(
                                   color: FlutterFlowTheme.of(context).alternate,
                                   width: 1.0,
@@ -201,7 +201,7 @@ class _BooksLibraryWidgetState extends State<BooksLibraryWidget> {
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
                                     ClipRRect(
-                                      borderRadius: BorderRadius.circular(16.0),
+                                      borderRadius: BorderRadius.circular(8.0),
                                       child: Container(
                                         width: 100.0,
                                         height: 140.0,
@@ -214,16 +214,23 @@ class _BooksLibraryWidgetState extends State<BooksLibraryWidget> {
                                               spreadRadius: 0.0,
                                             )
                                           ],
-                                          borderRadius: BorderRadius.circular(16.0),
+                                          borderRadius: BorderRadius.circular(8.0),
                                         ),
-                                        child: CachedNetworkImage(
-                                          fadeInDuration: Duration(milliseconds: 0),
-                                          fadeOutDuration: Duration(milliseconds: 0),
-                                          imageUrl: historyRow.cover ?? '',
-                                          width: double.infinity,
-                                          height: double.infinity,
-                                          fit: BoxFit.fill,
-                                        ),
+                                        child: (historyRow.cover?.startsWith('assets/') ?? false)
+                                            ? Image.asset(
+                                                historyRow.cover!,
+                                                width: double.infinity,
+                                                height: double.infinity,
+                                                fit: BoxFit.fill,
+                                              )
+                                            : CachedNetworkImage(
+                                                fadeInDuration: Duration(milliseconds: 0),
+                                                fadeOutDuration: Duration(milliseconds: 0),
+                                                imageUrl: historyRow.cover ?? '',
+                                                width: double.infinity,
+                                                height: double.infinity,
+                                                fit: BoxFit.fill,
+                                              ),
                                       ),
                                     ),
                                     Expanded(
@@ -372,6 +379,7 @@ class _BooksLibraryWidgetState extends State<BooksLibraryWidget> {
 
                           return GridView.builder(
                             padding: EdgeInsets.zero,
+                            physics: const NeverScrollableScrollPhysics(),
                             gridDelegate:
                                 SliverGridDelegateWithFixedCrossAxisCount(
                               crossAxisCount: 3,

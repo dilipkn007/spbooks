@@ -77,7 +77,7 @@ class _BookCardWidgetState extends State<BookCardWidget> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           ClipRRect(
-            borderRadius: BorderRadius.circular(24.0),
+            borderRadius: BorderRadius.circular(8.0),
             child: Container(
               width: 100.0,
               height: 130.0,
@@ -93,18 +93,26 @@ class _BookCardWidgetState extends State<BookCardWidget> {
                     spreadRadius: 0.0,
                   )
                 ],
-                borderRadius: BorderRadius.circular(24.0),
+                borderRadius: BorderRadius.circular(8.0),
               ),
               child: Stack(
                 children: [
-                  CachedNetworkImage(
-                    fadeInDuration: Duration(milliseconds: 0),
-                    fadeOutDuration: Duration(milliseconds: 0),
-                    imageUrl: widget.coverImage!.trim(),
-                    width: double.infinity,
-                    height: double.infinity,
-                    fit: BoxFit.fill,
-                  ),
+                  if (widget.coverImage?.startsWith('assets/') ?? false)
+                    Image.asset(
+                      widget.coverImage!,
+                      width: double.infinity,
+                      height: double.infinity,
+                      fit: BoxFit.fill,
+                    )
+                  else
+                    CachedNetworkImage(
+                      fadeInDuration: Duration(milliseconds: 0),
+                      fadeOutDuration: Duration(milliseconds: 0),
+                      imageUrl: widget.coverImage!.trim(),
+                      width: double.infinity,
+                      height: double.infinity,
+                      fit: BoxFit.fill,
+                    ),
                   Padding(
                     padding: EdgeInsets.all(0.0),
                     child: Container(

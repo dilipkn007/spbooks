@@ -46,7 +46,7 @@ class _ActionChipWidgetState extends State<ActionChipWidget> {
     return Container(
       decoration: BoxDecoration(
         color: FlutterFlowTheme.of(context).secondaryBackground,
-        borderRadius: BorderRadius.circular(24.0),
+        borderRadius: BorderRadius.circular(8.0),
         border: Border.all(
           color: FlutterFlowTheme.of(context).alternate,
           width: 1.0,

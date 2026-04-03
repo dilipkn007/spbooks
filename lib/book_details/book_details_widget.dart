@@ -124,7 +124,7 @@ class _BookDetailsWidgetState extends State<BookDetailsWidget> {
                               Container(
                                 alignment: AlignmentDirectional(0.0, 0.0),
                                 child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(16.0),
+                                  borderRadius: BorderRadius.circular(8.0),
                                   child: Container(
                                     width: 200.0,
                                     height: 300.0,
@@ -140,7 +140,7 @@ class _BookDetailsWidgetState extends State<BookDetailsWidget> {
                                           spreadRadius: 0.0,
                                         )
                                       ],
-                                      borderRadius: BorderRadius.circular(16.0),
+                                      borderRadius: BorderRadius.circular(8.0),
                                     ),
                                     child: CachedNetworkImage(
                                       fadeInDuration: Duration(milliseconds: 0),
@@ -216,7 +216,7 @@ class _BookDetailsWidgetState extends State<BookDetailsWidget> {
                                 decoration: BoxDecoration(
                                   color: FlutterFlowTheme.of(context)
                                       .secondaryBackground,
-                                  borderRadius: BorderRadius.circular(24.0),
+                                  borderRadius: BorderRadius.circular(8.0),
                                   border: Border.all(
                                     color:
                                         FlutterFlowTheme.of(context).alternate,
@@ -408,7 +408,7 @@ class _BookDetailsWidgetState extends State<BookDetailsWidget> {
                           decoration: BoxDecoration(
                             color: FlutterFlowTheme.of(context)
                                 .secondaryBackground,
-                            borderRadius: BorderRadius.circular(24.0),
+                            borderRadius: BorderRadius.circular(8.0),
                             border: Border.all(
                               color: FlutterFlowTheme.of(context).alternate,
                               width: 1.0,
@@ -454,7 +454,7 @@ class _BookDetailsWidgetState extends State<BookDetailsWidget> {
                               spreadRadius: 0.0,
                             )
                           ],
-                          borderRadius: BorderRadius.circular(24.0),
+                          borderRadius: BorderRadius.circular(8.0),
                         ),
                         alignment: AlignmentDirectional(0.0, 0.0),
                         child: Row(

@@ -48,7 +48,7 @@ class _BookmarkTabWidgetState extends State<BookmarkTabWidget> {
         color: widget.selected!
             ? FlutterFlowTheme.of(context).secondaryBackground
             : Colors.transparent,
-        borderRadius: BorderRadius.circular(16.0),
+        borderRadius: BorderRadius.circular(8.0),
         border: Border.all(
           color: widget.selected!
               ? FlutterFlowTheme.of(context).alternate
